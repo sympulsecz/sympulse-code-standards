@@ -1,0 +1,71 @@
+# Python Coding Standards Rules
+
+file_structure:
+  required_directories:
+    - "src"
+    - "tests"
+    - "docs"
+  required_files:
+    - "pyproject.toml"
+    - "README.md"
+    - "CONTRIBUTING.md"
+    - ".gitignore"
+    - "src/__init__.py"
+
+naming:
+  modules: "^[a-z_][a-z0-9_]*$"
+  classes: "^[A-Z][a-zA-Z0-9]*$"
+  functions: "^[a-z_][a-z0-9_]*$"
+  variables: "^[a-z_][a-z0-9_]*$"
+  constants: "^[A-Z][A-Z0-9_]*$"
+  private: "^_[a-z_][a-z0-9_]*$"
+
+imports:
+  order: ["stdlib", "third_party", "local"]
+  check_unused: true
+  max_line_length: 88
+  group_by_package: true
+
+code_structure:
+  max_function_length: 50
+  max_class_length: 200
+  max_module_length: 500
+  max_line_length: 88
+  require_docstrings: true
+  require_type_hints: true
+
+formatting:
+  formatter: "black"
+  line_length: 88
+  quote_style: "double"
+  trailing_comma: "auto"
+
+testing:
+  framework: "pytest"
+  coverage_minimum: 80
+  require_tests: true
+  test_naming: "test_*"
+  test_organization: "by_module"
+
+documentation:
+  docstring_style: "google"
+  require_module_docstrings: true
+  require_function_docstrings: true
+  require_class_docstrings: true
+  readme_sections:
+    - "Description"
+    - "Installation"
+    - "Usage"
+    - "Contributing"
+    - "License"
+
+configuration:
+  required_tools:
+    - "black"
+    - "isort"
+    - "flake8"
+    - "mypy"
+    - "pytest"
+  min_python_version: "3.8"
+  require_pinned_versions: true
+  dependency_management: "poetry"

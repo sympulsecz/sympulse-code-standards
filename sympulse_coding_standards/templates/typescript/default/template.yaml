@@ -1,0 +1,22 @@
+name: "TypeScript Project Template"
+description: "Standard TypeScript project with Sympulse coding standards"
+languages: ["typescript"]
+structure:
+  directories:
+    - "src"
+    - "tests"
+    - "docs"
+    - "dist"
+    - ".github/workflows"
+  empty_files:
+    - "src/index.ts"
+    - "tests/.gitkeep"
+    - "docs/.gitkeep"
+dependencies:
+  typescript:
+    - "typescript"
+    - "@types/node"
+    - "eslint"
+    - "prettier"
+    - "jest"
+    - "ts-jest"

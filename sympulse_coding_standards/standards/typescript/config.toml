@@ -1,0 +1,52 @@
+# TypeScript Standards Configuration
+version = "0.1.0"
+formatter = "prettier"
+linter = "eslint"
+type_checker = "typescript"
+test_framework = "jest"
+line_length = 80
+node_version = "18"
+
+[prettier]
+semi = true
+trailing_comma = "es5"
+single_quote = true
+print_width = 80
+tab_width = 2
+use_tabs = false
+
+[eslint]
+extends = ["@typescript-eslint/recommended", "prettier"]
+parser = "@typescript-eslint/parser"
+plugins = ["@typescript-eslint"]
+
+[eslint.rules]
+"@typescript-eslint/no-unused-vars" = "error"
+"@typescript-eslint/explicit-function-return-type" = "warn"
+"@typescript-eslint/no-explicit-any" = "warn"
+"prefer-const" = "error"
+"no-var" = "error"
+
+[typescript]
+target = "ES2020"
+module = "ESNext"
+moduleResolution = "node"
+strict = true
+esModuleInterop = true
+skipLibCheck = true
+forceConsistentCasingInFileNames = true
+declaration = true
+outDir = "dist"
+rootDir = "src"
+
+[jest]
+preset = "ts-jest"
+testEnvironment = "node"
+testMatch = ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"]
+collectCoverageFrom = ["src/**/*.ts", "!src/**/*.d.ts"]
+
+[jest.coverageThreshold.global]
+branches = 80
+functions = 80
+lines = 80
+statements = 80

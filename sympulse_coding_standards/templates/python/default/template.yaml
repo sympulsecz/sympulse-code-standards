@@ -1,0 +1,21 @@
+name: "Python Project Template"
+description: "Standard Python project with Sympulse coding standards"
+languages: ["python"]
+structure:
+  directories:
+    - "src"
+    - "tests"
+    - "docs"
+    - ".github/workflows"
+  empty_files:
+    - "src/__init__.py"
+    - "tests/__init__.py"
+    - "docs/.gitkeep"
+dependencies:
+  python:
+    - "black"
+    - "isort"
+    - "flake8"
+    - "mypy"
+    - "pytest"
+    - "pytest-cov"

@@ -1,0 +1,12 @@
+{
+	"name": "python",
+	"version": "0.1.0",
+	"description": "Python coding standards for Sympulse team",
+	"languages": ["python"],
+	"last_updated": "2024-01-01",
+	"maintainer": "Sympulse Team",
+	"formatters": ["black", "isort"],
+	"linters": ["flake8", "mypy"],
+	"test_frameworks": ["pytest"],
+	"dependency_managers": ["poetry", "pip-tools"]
+}

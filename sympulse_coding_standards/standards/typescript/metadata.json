@@ -1,0 +1,13 @@
+{
+	"name": "typescript",
+	"version": "0.1.0",
+	"description": "TypeScript coding standards for Sympulse team",
+	"languages": ["typescript", "javascript"],
+	"last_updated": "2024-01-01",
+	"maintainer": "Sympulse Team",
+	"formatters": ["prettier", "dprint"],
+	"linters": ["eslint", "biome"],
+	"type_checker": "typescript",
+	"test_frameworks": ["jest", "vitest"],
+	"build_tools": ["tsc", "esbuild", "vite"]
+}

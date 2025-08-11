@@ -1,0 +1,88 @@
+# TypeScript Coding Standards Rules
+
+file_structure:
+  required_directories:
+    - "src"
+    - "tests"
+    - "docs"
+    - "dist"
+  required_files:
+    - "package.json"
+    - "tsconfig.json"
+    - "README.md"
+    - "CONTRIBUTING.md"
+    - ".gitignore"
+    - "src/index.ts"
+
+naming:
+  interfaces: "^[A-Z][a-zA-Z0-9]*$"
+  types: "^[A-Z][a-zA-Z0-9]*$"
+  classes: "^[A-Z][a-zA-Z0-9]*$"
+  functions: "^[a-z][a-zA-Z0-9]*$"
+  variables: "^[a-z][a-zA-Z0-9]*$"
+  constants: "^[A-Z][A-Z0-9_]*$"
+  private: "^_[a-z][a-zA-Z0-9]*$"
+
+imports:
+  order: ["external", "internal", "relative"]
+  check_unused: true
+  max_line_length: 80
+  prefer_named_exports: true
+  no_wildcard_imports: true
+
+code_structure:
+  max_function_length: 50
+  max_class_length: 200
+  max_file_length: 500
+  max_line_length: 80
+  require_type_annotations: true
+  no_any_type: true
+  strict_null_checks: true
+
+formatting:
+  formatter: "prettier"
+  line_length: 80
+  quote_style: "single"
+  trailing_comma: "es5"
+  semicolons: true
+
+testing:
+  framework: "jest"
+  coverage_minimum: 80
+  require_tests: true
+  test_naming: "*.test.ts or *.spec.ts"
+  test_organization: "by_module"
+  mock_usage: "jest.mock()"
+
+documentation:
+  require_jsdoc: true
+  jsdoc_style: "google"
+  require_module_documentation: true
+  require_function_documentation: true
+  require_class_documentation: true
+  readme_sections:
+    - "Description"
+    - "Installation"
+    - "Usage"
+    - "API Reference"
+    - "Contributing"
+    - "License"
+
+configuration:
+  required_scripts:
+    - "build"
+    - "test"
+    - "lint"
+    - "format"
+    - "type-check"
+  required_dependencies:
+    - "typescript"
+    - "@types/node"
+  required_dev_dependencies:
+    - "eslint"
+    - "prettier"
+    - "jest"
+    - "ts-jest"
+  min_node_version: "18"
+  require_pinned_versions: true
+  package_manager: "npm"

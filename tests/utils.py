@@ -36,14 +36,16 @@ def assert_file_contains(path: Path, expected_text: str) -> None:
     """Assert that a file contains expected text."""
     assert path.exists(), f"File {path} does not exist"
     content = path.read_text()
-    assert expected_text in content, f"Expected text '{expected_text}' not found in {path}"
+    assert (
+        expected_text in content
+    ), f"Expected text '{expected_text}' not found in {path}"
 
 
 def create_mock_project_structure(base_path: Path, structure: Dict[str, Any]) -> None:
     """Create a mock project structure for testing."""
     for item, details in structure.items():
         item_path = base_path / item
-        
+
         if isinstance(details, dict):
             # Directory with sub-items
             create_mock_directory(item_path)
@@ -55,7 +57,7 @@ def create_mock_project_structure(base_path: Path, structure: Dict[str, Any]) ->
             # List of files or directories
             for sub_item in details:
                 sub_path = item_path / sub_item
-                if sub_item.endswith('/'):
+                if sub_item.endswith("/"):
                     create_mock_directory(sub_path)
                 else:
                     create_mock_file(sub_path)
@@ -78,7 +80,7 @@ def mock_rich_prompt_responses(**responses):
     mock_prompt = Mock()
     mock_confirm = Mock()
     mock_int_prompt = Mock()
-    
+
     # Set up responses
     for key, value in responses.items():
         if key.startswith("prompt_"):
@@ -87,7 +89,7 @@ def mock_rich_prompt_responses(**responses):
             mock_confirm.ask.return_value = value
         elif key.startswith("int_"):
             mock_int_prompt.ask.return_value = value
-    
+
     return {
         "Prompt": mock_prompt,
         "Confirm": mock_confirm,
@@ -109,7 +111,7 @@ def create_mock_template_config(
     if structure is None:
         structure = {
             "directories": ["src", "tests"],
-            "empty_files": ["src/__init__.py", "tests/__init__.py"]
+            "empty_files": ["src/__init__.py", "tests/__init__.py"],
         }
     if dependencies is None:
         dependencies = {"python": ["pytest", "black"]}
@@ -124,7 +126,7 @@ def create_mock_template_config(
             "documentation_enabled": False,
             "security_enabled": False,
         }
-    
+
     return {
         "name": name,
         "description": description,
@@ -136,9 +138,7 @@ def create_mock_template_config(
 
 
 def create_mock_project_config(
-    name: str = "test-project",
-    language: str = "python",
-    **overrides
+    name: str = "test-project", language: str = "python", **overrides
 ) -> Dict[str, Any]:
     """Create a mock project configuration."""
     base_config = {
@@ -177,7 +177,7 @@ def create_mock_project_config(
             "import_sorter": "isort",
         },
     }
-    
+
     base_config.update(overrides)
     return base_config
 
@@ -194,7 +194,7 @@ def mock_git_commands():
     """Context manager to mock git commands."""
     mock_run = Mock()
     mock_run.return_value.returncode = 0
-    
+
     return patch("subprocess.run", mock_run)
 
 
@@ -202,7 +202,7 @@ def mock_pre_commit_commands():
     """Context manager to mock pre-commit commands."""
     mock_run = Mock()
     mock_run.return_value.returncode = 0
-    
+
     return patch("subprocess.run", mock_run)
 
 
@@ -212,11 +212,13 @@ def cleanup_test_project(project_path: Path) -> None:
         shutil.rmtree(project_path)
 
 
-def assert_project_structure(project_path: Path, expected_structure: Dict[str, Any]) -> None:
+def assert_project_structure(
+    project_path: Path, expected_structure: Dict[str, Any]
+) -> None:
     """Assert that a project has the expected structure."""
     for item, details in expected_structure.items():
         item_path = project_path / item
-        
+
         if isinstance(details, dict):
             # Directory with sub-items
             assert_directory_exists(item_path)
@@ -230,7 +232,7 @@ def assert_project_structure(project_path: Path, expected_structure: Dict[str, A
             # List of files or directories
             for sub_item in details:
                 sub_path = item_path / sub_item
-                if sub_item.endswith('/'):
+                if sub_item.endswith("/"):
                     assert_directory_exists(sub_path)
                 else:
                     assert_file_exists(sub_path)

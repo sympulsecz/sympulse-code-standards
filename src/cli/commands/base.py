@@ -4,7 +4,7 @@ import typer
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from pathlib import Path
-from typing import Optional, Callable, Dict
+from typing import Optional, Callable
 
 from abc import ABC, abstractmethod
 
@@ -21,8 +21,8 @@ class CommandGroup(ABC):
             name=name,
             help=help_text,
             add_completion=False,
-            invoke_without_command=True,
-            no_args_is_help=True,
+            invoke_without_command=False,
+            no_args_is_help=False,
         )
         self._add_help_callback()
 
@@ -51,7 +51,7 @@ class NestedCommandGroup(CommandGroup):
 
     def __init__(self, name: str, help_text: str):
         super().__init__(name, help_text)
-        self.subgroups: Dict[str, CommandGroup] = {}
+        self.subgroups: dict[str, CommandGroup] = {}
 
     def add_subgroup(self, subgroup: CommandGroup):
         """Add a subgroup to this command group."""
@@ -67,7 +67,7 @@ class CommandRegistry:
     """Registry for managing command groups and their registration."""
 
     def __init__(self):
-        self.groups: Dict[str, CommandGroup] = {}
+        self.groups: dict[str, CommandGroup] = {}
 
     def register_group(self, group: CommandGroup):
         """Register a command group."""
@@ -78,7 +78,7 @@ class CommandRegistry:
         """Get a command group by name."""
         return self.groups.get(name)
 
-    def get_all_groups(self) -> Dict[str, CommandGroup]:
+    def get_all_groups(self) -> dict[str, CommandGroup]:
         """Get all registered command groups."""
         return self.groups.copy()
 

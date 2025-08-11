@@ -7,22 +7,14 @@ import typer
 from rich import print as rprint
 
 from src.generators import ProjectGenerator
-from .base import (
-    create_command_app,
-    add_help_callback,
+from src.cli.commands.base import (
+    create_direct_command,
     create_progress_bar,
     handle_generic_error,
 )
 
-# Create the command app
-app = create_command_app(
-    name="init", help_text="Initialize a new project with coding standards"
-)
-add_help_callback(app)
 
-
-@app.command()
-def project(
+def init_project(
     language: str = typer.Option(
         ..., "--language", "-l", help="Programming language for the project"
     ),

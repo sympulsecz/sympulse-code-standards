@@ -3,18 +3,15 @@
 import typer
 from rich.table import Table
 
-from ...core import StandardsManager
-from .base import create_command_app, add_help_callback, handle_generic_error, console
-
-# Create the command app
-app = create_command_app(
-    name="list-standards", help_text="List available coding standards"
+from src.core import StandardsManager
+from src.cli.commands.base import (
+    create_command_with_main_function,
+    handle_generic_error,
+    console,
 )
-add_help_callback(app)
 
 
-@app.command()
-def standards():
+def list_standards():
     """List available coding standards."""
     try:
         manager = StandardsManager()

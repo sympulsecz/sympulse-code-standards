@@ -3,18 +3,15 @@
 import typer
 from rich.panel import Panel
 
-from ...core import StandardsManager
-from .base import create_command_app, add_help_callback, handle_generic_error, console
-
-# Create the command app
-app = create_command_app(
-    name="show-standard", help_text="Show details of a specific coding standard"
+from src.core import StandardsManager
+from src.cli.commands.base import (
+    create_command_with_main_function,
+    handle_generic_error,
+    console,
 )
-add_help_callback(app)
 
 
-@app.command()
-def standard(
+def show_standards(
     standard_name: str = typer.Argument(..., help="Name of the standard to show"),
 ):
     """Show details of a specific coding standard."""

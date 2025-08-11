@@ -5,25 +5,17 @@ from pathlib import Path
 import typer
 from rich.panel import Panel
 
-from ...core import StandardsManager
-from .base import (
-    create_command_app,
-    add_help_callback,
+from src.core import StandardsManager
+from ..base import (
+    create_command_with_main_function,
     create_progress_bar,
     handle_path_validation,
     handle_generic_error,
     console,
 )
 
-# Create the command app
-app = create_command_app(
-    name="audit", help_text="Audit project compliance with coding standards"
-)
-add_help_callback(app)
 
-
-@app.command()
-def project(
+def audit_project(
     path: Path = typer.Argument(Path.cwd(), help="Project path to audit"),
     detailed: bool = typer.Option(
         False, "--detailed", "-d", help="Show detailed audit report"

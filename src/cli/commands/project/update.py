@@ -5,25 +5,17 @@ from typing import Optional
 
 import typer
 
-from ...core import StandardsManager
-from .base import (
-    create_command_app,
-    add_help_callback,
+from src.core import StandardsManager
+from src.cli.commands.base import (
+    create_command_with_main_function,
     create_progress_bar,
     handle_path_validation,
     handle_generic_error,
     console,
 )
 
-# Create the command app
-app = create_command_app(
-    name="update", help_text="Update project standards to latest version"
-)
-add_help_callback(app)
 
-
-@app.command()
-def project(
+def update_project(
     path: Path = typer.Argument(Path.cwd(), help="Project path to update"),
     language: Optional[str] = typer.Option(
         None, "--language", "-l", help="Specific language to update"

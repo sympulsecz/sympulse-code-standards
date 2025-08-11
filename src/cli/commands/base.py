@@ -38,6 +38,36 @@ def add_help_callback(app: typer.Typer) -> None:
             raise typer.Exit(0)
 
 
+def create_command_with_main_function(
+    name: str,
+    help_text: str,
+    main_function: callable,
+    add_completion: bool = False,
+) -> typer.Typer:
+    """Create a command app that directly uses the main function as the command."""
+    # Create a simple Typer app without subcommands
+    app = typer.Typer(
+        name=name,
+        help=help_text,
+        add_completion=add_completion,
+        no_args_is_help=True,
+    )
+
+    # Add the main function directly as the command
+    app.command()(main_function)
+
+    return app
+
+
+def create_direct_command(
+    name: str,
+    help_text: str,
+    main_function: callable,
+) -> callable:
+    """Create a command function that can be added directly to the main app."""
+    return main_function
+
+
 def create_progress_bar(description: str) -> Progress:
     """Create a progress bar with common configuration."""
     return Progress(

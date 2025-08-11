@@ -5,24 +5,16 @@ from pathlib import Path
 import typer
 
 from src.core import StandardsManager
-from .base import (
-    create_command_app,
-    add_help_callback,
+from src.cli.commands.base import (
+    create_command_with_main_function,
     create_progress_bar,
     handle_path_validation,
     handle_generic_error,
     console,
 )
 
-# Create the command app
-app = create_command_app(
-    name="validate", help_text="Validate a project against coding standards"
-)
-add_help_callback(app)
 
-
-@app.command()
-def project(
+def validate_project(
     path: Path = typer.Argument(Path.cwd(), help="Project path to validate"),
     strict: bool = typer.Option(
         False, "--strict", "-s", help="Enable strict validation"

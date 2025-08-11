@@ -1,46 +1,39 @@
 """Main CLI application for Sympulse Coding Standards."""
 
 import typer
+import src.cli.commands as commands
 
-from .commands import (
-    init_app,
-    validate_app,
-    update_app,
-    audit_app,
-    list_standards_app,
-    show_standard_app,
-)
 
 # Static command configurations to keep code DRY
 COMMAND_CONFIGS = [
     {
-        "app": init_app,
-        "name": "init",
+        "command": commands.init_project,
+        "name": "project-init",
         "help": "Initialize a new project with coding standards",
     },
     {
-        "app": validate_app,
-        "name": "validate",
+        "command": commands.validate_project,
+        "name": "project-validate",
         "help": "Validate a project against coding standards",
     },
     {
-        "app": update_app,
-        "name": "update",
+        "command": commands.update_project,
+        "name": "project-update",
         "help": "Update project standards to latest version",
     },
     {
-        "app": audit_app,
-        "name": "audit",
+        "command": commands.audit_project,
+        "name": "project-audit",
         "help": "Audit project compliance with coding standards",
     },
     {
-        "app": list_standards_app,
-        "name": "list-standards",
+        "command": commands.list_standards,
+        "name": "standards-list",
         "help": "List available coding standards",
     },
     {
-        "app": show_standard_app,
-        "name": "show-standard",
+        "command": commands.show_standards,
+        "name": "standards-show",
         "help": "Show details of a specific coding standard",
     },
 ]
@@ -53,9 +46,9 @@ app = typer.Typer(
     invoke_without_command=True,
 )
 
-# Add all command groups dynamically
+# Add all commands directly to the main app
 for config in COMMAND_CONFIGS:
-    app.add_typer(config["app"], name=config["name"], help=config["help"])
+    app.command(name=config["name"], help=config["help"])(config["command"])
 
 
 # Main callback for when no command is provided

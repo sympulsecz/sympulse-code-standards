@@ -48,7 +48,7 @@ class NestedCommandGroup(CommandGroup):
         """Add a direct command to this group."""
         # Check if the function is already a Click command
         if hasattr(func, "name") and hasattr(func, "callback"):
-            # Function is already a Click command, just add it directly
+            # Function is already decorated, just add it directly
             self.group.add_command(func, name=name)
         else:
             # Create a Click command from the function

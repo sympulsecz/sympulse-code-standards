@@ -51,19 +51,19 @@ cd my-awesome-project
 ### 2. Validate existing project against standards
 
 ```bash
-scs validate --path /path/to/project
+scs tools validate --path /path/to/project
 ```
 
 ### 3. Update standards in a project
 
 ```bash
-scs update --path /path/to/project
+scs project update --path /path/to/project
 ```
 
 ### 4. Check project compliance
 
 ```bash
-scs audit --path /path/to/project
+scs project audit --path /path/to/project
 ```
 
 ## 📖 Usage
@@ -72,22 +72,22 @@ scs audit --path /path/to/project
 
 ```bash
 # Initialize new project
-scs init [OPTIONS]
+scs project init [OPTIONS]
 
 # Validate project against standards
-scs validate [OPTIONS]
+scs project validate [OPTIONS]
 
 # Update project standards
-scs update [OPTIONS]
+scs project update [OPTIONS]
 
 # Audit project compliance
-scs audit [OPTIONS]
+scs project audit [OPTIONS]
 
 # List available standards
-scs list-standards
+scs standards list
 
 # Show standards details
-scs show-standard <STANDARD_NAME>
+scs standards show <STANDARD_NAME>
 ```
 
 ### Configuration
@@ -116,24 +116,6 @@ line_length = 88
 formatter = "prettier"
 linter = "eslint"
 test_framework = "jest"
-```
-
-## 🏗️ Architecture
-
-```plain
-sympulse-coding-standards/
-├── standards/                 # Core standards definitions
-│   ├── python/              # Python-specific standards
-│   ├── typescript/          # TypeScript-specific standards
-│   └── common/              # Cross-language standards
-├── templates/                # Project templates
-│   ├── python/              # Python project template
-│   ├── typescript/          # TypeScript project template
-│   └── mixed/               # Multi-language template
-├── validators/               # Standards validation logic
-├── generators/               # Project scaffolding
-├── cli/                     # Command-line interface
-└── workflows/               # CI/CD templates
 ```
 
 ## 🔧 Standards Enforcement
@@ -203,10 +185,10 @@ Add new language support by creating:
 
 ```bash
 # Update to latest standards
-scs update --path /path/to/project
+scs project update --path /path/to/project
 
 # Update to specific version
-scs update --path /path/to/project --version 1.2.0
+scs project update --path /path/to/project --version 1.2.0
 ```
 
 ## 🧪 Testing

@@ -237,7 +237,8 @@ description = "{{ description }}"
 @pytest.fixture
 def sample_common_templates(tmp_path: Path) -> Path:
     """Create sample common templates for testing."""
-    common_dir = tmp_path / "templates" / "common"
+    templates_dir = tmp_path / "templates"
+    common_dir = templates_dir / "common"
     common_dir.mkdir(parents=True)
 
     # Create CONTRIBUTING.md.j2

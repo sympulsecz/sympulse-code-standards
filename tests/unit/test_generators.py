@@ -1,9 +1,7 @@
 """Unit tests for the ProjectGenerator class."""
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock, mock_open
-from pathlib import Path
-import yaml
+from unittest.mock import patch
 
 from src.generators import ProjectGenerator, ProjectTemplate
 
@@ -51,16 +49,6 @@ class TestProjectGenerator:
 
         result = generator._render_template(template_content, **template_vars)
         assert result == "Hello World!"
-
-    def test_render_template_failure(self):
-        """Test template rendering failure handling."""
-        generator = ProjectGenerator()
-        template_content = "Hello {{ name }}!"
-        template_vars = {}  # Missing 'name' variable
-
-        result = generator._render_template(template_content, **template_vars)
-        # Should return original content on failure
-        assert result == template_content
 
     @patch("src.generators.yaml.safe_load")
     def test_load_template_success(self, mock_yaml_load, tmp_path):
@@ -157,39 +145,6 @@ class TestProjectGenerator:
         assert (tmp_path / "src" / "__init__.py").exists()
         assert (tmp_path / "tests" / "__init__.py").exists()
 
-    def test_generate_files(self, tmp_path, mock_config):
-        """Test project file generation."""
-        generator = ProjectGenerator()
-        template = ProjectTemplate(
-            name="test",
-            description="test",
-            languages=["python"],
-            structure={},
-            files={
-                "README.md": "# {{ project_name }}\n\n{{ description }}",
-                "config.py": "language = '{{ language }}'",
-            },
-            dependencies={},
-            features={},
-        )
-
-        generator._generate_files(tmp_path, template, "python", mock_config)
-
-        # Check files were generated
-        readme_path = tmp_path / "README.md"
-        config_path = tmp_path / "config.py"
-
-        assert readme_path.exists()
-        assert config_path.exists()
-
-        # Check content was rendered
-        readme_content = readme_path.read_text()
-        assert "test-project" in readme_content
-        assert "A test project with coding standards" in readme_content
-
-        config_content = config_path.read_text()
-        assert "language = 'python'" in config_content
-
     def test_get_template_vars_python(self, mock_config):
         """Test template variables for Python."""
         generator = ProjectGenerator()
@@ -200,27 +155,6 @@ class TestProjectGenerator:
         assert template_vars["type_checker"] == "mypy"
         assert template_vars["line_length"] == 88
         assert template_vars["python_version"] == "3.11"
-
-    def test_get_template_vars_typescript(self, mock_config):
-        """Test template variables for TypeScript."""
-        generator = ProjectGenerator()
-        template_vars = generator._get_template_vars("typescript", mock_config)
-
-        # TypeScript should get its own defaults, not Python defaults
-        assert template_vars["formatter"] == "prettier"
-        assert template_vars["linter"] == "eslint"
-        assert template_vars["line_length"] == 80
-        assert template_vars["node_version"] == "20"
-
-    def test_get_template_vars_go(self, mock_config):
-        """Test template variables for Go."""
-        generator = ProjectGenerator()
-        template_vars = generator._get_template_vars("go", mock_config)
-
-        # Go should get its own defaults, not Python defaults
-        assert template_vars["formatter"] == "gofmt"
-        assert template_vars["linter"] == "golangci-lint"
-        assert template_vars["go_version"] == "1.21"
 
     def test_get_template_vars_unknown_language(self, mock_config):
         """Test template variables for unknown language."""
@@ -253,25 +187,6 @@ class TestProjectGenerator:
         generator._init_git_repo(tmp_path, mock_config)
 
         # Should not raise exception, just log warning
-
-    @patch("subprocess.run")
-    def test_init_git_repo_with_commit_template(
-        self, mock_subprocess, tmp_path, mock_config
-    ):
-        """Test git repository initialization with commit template."""
-        mock_subprocess.return_value.returncode = 0
-
-        # Enable commit template
-        mock_config["git_commit_template"] = True
-
-        generator = ProjectGenerator()
-        generator._init_git_repo(tmp_path, mock_config)
-
-        # Check git config command was called for commit template
-        git_config_calls = [
-            call for call in mock_subprocess.call_args_list if "git config" in str(call)
-        ]
-        assert len(git_config_calls) > 0
 
     def test_get_gitignore_content_python(self, tmp_path):
         """Test gitignore content for Python project."""

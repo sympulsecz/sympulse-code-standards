@@ -1340,4 +1340,4 @@ dev = ["black", "flake8", "isort", "mypy", "pre-commit", "pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "2d3af48909f623533c6c0db5b18ef4708faa618741781c07c6fa657b1cce1cd8"
+content-hash = "241a363d797ddde23f9f7c6302555073e0ac94e7af6432b187e693f5ce3c870e"

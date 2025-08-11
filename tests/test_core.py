@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from sympulse_coding_standards.core import (
+from src.core import (
     StandardsManager,
     StandardsConfig,
     StandardMetadata,
@@ -84,7 +84,7 @@ class TestStandardsManager:
 
         assert manager.standards_path == tmp_path
 
-    @patch("sympulse_coding_standards.core.toml.load")
+    @patch("src.core.toml.load")
     def test_load_config_with_file(self, mock_toml_load, tmp_path):
         """Test loading config from file."""
         mock_config = {

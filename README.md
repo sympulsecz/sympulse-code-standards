@@ -216,7 +216,7 @@ scs update --path /path/to/project --version 1.2.0
 pytest
 
 # Run with coverage
-pytest --cov=sympulse_coding_standards
+pytest --cov=src
 
 # Run specific test
 pytest tests/test_validators.py::test_python_validation

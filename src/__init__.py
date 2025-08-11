@@ -7,6 +7,7 @@ __email__ = "petr.cala@sympulse.cz"
 from .core import StandardsManager, ValidationResult
 from .validators import PythonValidator, TypeScriptValidator, ValidationIssue
 from .generators import ProjectGenerator
+from .cli import app as cli_app
 
 __all__ = [
     "StandardsManager",
@@ -15,5 +16,6 @@ __all__ = [
     "PythonValidator",
     "TypeScriptValidator",
     "ValidationIssue",
+    "cli_app",
     "__version__",
 ]

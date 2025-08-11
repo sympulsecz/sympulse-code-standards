@@ -6,6 +6,7 @@ from rich.console import Console
 from rich.prompt import Prompt, Confirm, IntPrompt
 from rich.panel import Panel
 from rich.text import Text
+import re
 
 console = Console()
 
@@ -17,11 +18,18 @@ class ProjectConfigurator:
         self.config = {}
 
     def configure_project(
-        self, language: Optional[str], project_name: str
+        self, language: Optional[str], name: Optional[str]
     ) -> Dict[str, Any]:
         """Run the full interactive configuration process."""
         console.print("\n[bold blue]🎯 Project Configuration[/bold blue]")
         console.print("Let's configure your project with the features you need.\n")
+
+        # Project name selection (if not provided)
+        if not name:
+            name = self._get_project_name()
+
+        # Store name in config
+        self.config["name"] = name
 
         # Language selection (if not provided)
         if not language:
@@ -31,7 +39,7 @@ class ProjectConfigurator:
         self.config["language"] = language
 
         # Basic project info
-        self.config.update(self._get_basic_info(project_name))
+        self.config.update(self._get_basic_info(name))
 
         # Repository features
         self.config.update(self._configure_repository_features())
@@ -59,6 +67,27 @@ class ProjectConfigurator:
         self._show_final_configuration()
 
         return self.config
+
+    def _get_project_name(self) -> str:
+        """Get project name interactively."""
+        console.print(Panel("📁 Project Name", style="blue"))
+
+        name = Prompt.ask("Enter project name", default="my-project")
+
+        # Validate project name (basic validation)
+        if not name or name.strip() == "":
+            name = "my-project"
+
+        # Clean up the name (remove spaces, special chars, etc.)
+        name = name.strip().lower().replace(" ", "-").replace("_", "-")
+        # Remove any remaining special characters except hyphens
+        name = re.sub(r"[^a-z0-9-]", "", name)
+        # Ensure it starts with a letter
+        if not name[0].isalpha():
+            name = "project-" + name
+
+        console.print(f"✅ Project name: {name}")
+        return name
 
     def _select_language(self) -> str:
         """Select programming language interactively."""

@@ -20,7 +20,7 @@ from src.cli.commands.base import (
     "-l",
     help="Programming language for the project (will prompt if not provided)",
 )
-@click.option("--name", "-n", required=True, help="Project name")
+@click.option("--name", "-n", help="Project name (will prompt if not provided)")
 @click.option(
     "--path",
     "-p",
@@ -39,7 +39,7 @@ from src.cli.commands.base import (
 @click.option("--non-interactive", is_flag=True, help="Skip interactive configuration")
 def init_project(
     language: Optional[str],
-    name: str,
+    name: Optional[str],
     path: Optional[Path],
     template: Optional[str],
     force: bool,
@@ -48,15 +48,6 @@ def init_project(
 ):
     """Initialize a new project with coding standards."""
     try:
-        if path is None:
-            path = Path.cwd() / name
-        else:
-            path = path / name
-
-        if path.exists() and not force:
-            if not click.confirm(f"Directory {path} already exists. Overwrite?"):
-                raise click.Abort()
-
         # Determine if we should use interactive mode
         use_interactive = interactive and not non_interactive
 
@@ -64,19 +55,25 @@ def init_project(
         config = {}
         if use_interactive:
             configurator = ProjectConfigurator()
-            # If language is not provided, it will be prompted for in the interactive flow
+            # If name or language are not provided, they will be prompted for in the interactive flow
             config = configurator.configure_project(language, name)
-            # Get the language from the configuration (either provided or selected interactively)
+            # Get the name and language from the configuration (either provided or selected interactively)
+            name = config.get("name", name)
             language = config.get("language", language)
         else:
             # Use default configuration for non-interactive mode
-            # Language must be provided for non-interactive mode
+            # Both name and language must be provided for non-interactive mode
+            if not name:
+                raise click.UsageError(
+                    "Project name must be specified when using --non-interactive mode"
+                )
             if not language:
                 raise click.UsageError(
                     "Language must be specified when using --non-interactive mode"
                 )
 
             config = {
+                "name": name,
                 "language": language,
                 "description": f"A {name} project with coding standards",
                 "author": "",
@@ -108,11 +105,25 @@ def init_project(
                 },
             }
 
-        # Ensure we have a language
+        # Ensure we have both name and language
+        if not name:
+            raise click.UsageError(
+                "Project name must be specified or selected interactively"
+            )
         if not language:
             raise click.UsageError(
                 "Language must be specified or selected interactively"
             )
+
+        # Set up project path
+        if path is None:
+            path = Path.cwd() / name
+        else:
+            path = path / name
+
+        if path.exists() and not force:
+            if not click.confirm(f"Directory {path} already exists. Overwrite?"):
+                raise click.Abort()
 
         with create_progress_bar("Initializing project...") as progress:
             task = progress.add_task("Initializing project...", total=None)

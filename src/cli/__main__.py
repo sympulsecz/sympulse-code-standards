@@ -11,6 +11,40 @@ from .commands import (
     show_standard_app,
 )
 
+# Static command configurations to keep code DRY
+COMMAND_CONFIGS = [
+    {
+        "app": init_app,
+        "name": "init",
+        "help": "Initialize a new project with coding standards",
+    },
+    {
+        "app": validate_app,
+        "name": "validate",
+        "help": "Validate a project against coding standards",
+    },
+    {
+        "app": update_app,
+        "name": "update",
+        "help": "Update project standards to latest version",
+    },
+    {
+        "app": audit_app,
+        "name": "audit",
+        "help": "Audit project compliance with coding standards",
+    },
+    {
+        "app": list_standards_app,
+        "name": "list-standards",
+        "help": "List available coding standards",
+    },
+    {
+        "app": show_standard_app,
+        "name": "show-standard",
+        "help": "Show details of a specific coding standard",
+    },
+]
+
 # Create the main Typer app
 app = typer.Typer(
     name="scs",
@@ -19,27 +53,9 @@ app = typer.Typer(
     invoke_without_command=True,
 )
 
-# Add all command groups
-app.add_typer(
-    init_app, name="init", help="Initialize a new project with coding standards"
-)
-app.add_typer(
-    validate_app, name="validate", help="Validate a project against coding standards"
-)
-app.add_typer(
-    update_app, name="update", help="Update project standards to latest version"
-)
-app.add_typer(
-    audit_app, name="audit", help="Audit project compliance with coding standards"
-)
-app.add_typer(
-    list_standards_app, name="list-standards", help="List available coding standards"
-)
-app.add_typer(
-    show_standard_app,
-    name="show-standard",
-    help="Show details of a specific coding standard",
-)
+# Add all command groups dynamically
+for config in COMMAND_CONFIGS:
+    app.add_typer(config["app"], name=config["name"], help=config["help"])
 
 
 # Main callback for when no command is provided

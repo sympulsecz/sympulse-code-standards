@@ -1,0 +1,49 @@
+# Central Version Configuration for Sympulse Code Standards
+# This file contains all major version numbers used across the project
+# Update this file to change versions everywhere
+
+[versions]
+# Project version
+project = "0.2.0"
+
+# Python versions
+python = "3.13"
+python_min = "3.11"
+python_target = "py313"
+
+# Node.js versions  
+node = "24"
+node_min = "22"
+
+# Package versions (major tools)
+black = "23.0.0"
+isort = "5.12.0"
+flake8 = "6.0.0"
+mypy = "1.0.0"
+pytest = "7.0.0"
+prettier = "3.0.0"
+eslint = "8.0.0"
+jest = "29.0.0"
+typescript = "5.0.0"
+
+# GitHub Actions versions
+actions_checkout = "v4"
+actions_setup_python = "v4"
+actions_setup_node = "v4"
+codeql_init = "v2"
+codeql_analyze = "v2"
+
+# File patterns to update
+[file_patterns]
+python_configs = [
+  "pyproject.toml",
+  "src/standards/python/config.toml",
+  "src/standards/python/rules.yaml",
+]
+typescript_configs = [
+  "src/standards/typescript/config.toml",
+  "src/standards/typescript/rules.yaml",
+]
+project_configs = ["src/standards/config.toml", "src/__init__.py"]
+scripts = ["install.sh"]
+templates = ["src/generators.py"]

@@ -2,7 +2,7 @@
 
 import click
 from rich.console import Console
-from src.cli.commands import project_group, standards_group, tools_group
+from src.cli.commands import project_group, standards_group, tools_group, admin_group
 from src.cli.commands.base import CommandRegistry
 
 console = Console()
@@ -26,6 +26,7 @@ def create_main_app() -> click.Group:
     registry.register_group(project_group)
     registry.register_group(standards_group)
     registry.register_group(tools_group)
+    registry.register_group(admin_group)
 
     for group_name, group in registry.get_all_groups().items():
         app.add_command(group.get_group(), name=group_name)

@@ -160,13 +160,37 @@ class VersionManager:
                 continue
 
             if file_path.endswith(".toml"):
-                self._update_file_content(
-                    full_path, [(r'version\s*=\s*"[^"]*"', f'version = "{version}"')]
-                )
+                # For toml files, we need to be more specific about which version field to update
+                if file_path == "pyproject.toml":
+                    # Main project version in pyproject.toml (not at beginning of file)
+                    self._update_file_content(
+                        full_path,
+                        [(r'^version\s*=\s*"[^"]*"', f'version = "{version}"')],
+                    )
+                elif file_path in [
+                    "src/standards/python/config.toml",
+                    "src/standards/typescript/config.toml",
+                ]:
+                    # Standards config version (not python_version or node_version)
+                    self._update_file_content(
+                        full_path,
+                        [(r'^version\s*=\s*"[^"]*"', f'version = "{version}"')],
+                    )
+                else:
+                    # Other toml files
+                    self._update_file_content(
+                        full_path,
+                        [(r'^version\s*=\s*"[^"]*"', f'version = "{version}"')],
+                    )
             elif file_path.endswith(".py"):
                 self._update_file_content(
                     full_path,
                     [(r'__version__\s*=\s*"[^"]*"', f'__version__ = "{version}"')],
+                )
+            elif file_path.endswith(".json"):
+                self._update_file_content(
+                    full_path,
+                    [(r'"version":\s*"[^"]*"', f'"version": "{version}"')],
                 )
 
     def _update_install_script(self, version: str) -> None:

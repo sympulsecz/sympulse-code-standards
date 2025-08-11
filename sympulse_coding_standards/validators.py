@@ -4,7 +4,7 @@ import re
 import ast
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Union, Tuple
+from typing import Optional, Any
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
@@ -25,11 +25,11 @@ class ValidationIssue:
 class BaseValidator:
     """Base class for language-specific validators."""
 
-    def __init__(self, rules: Dict[str, Any]):
+    def __init__(self, rules: dict[str, Any]):
         """Initialize validator with rules."""
         self.rules = rules
 
-    def validate(self, project_path: Path) -> List[ValidationIssue]:
+    def validate(self, project_path: Path) -> list[ValidationIssue]:
         """Validate a project against standards."""
         raise NotImplementedError("Subclasses must implement validate method")
 
@@ -37,7 +37,7 @@ class BaseValidator:
 class PythonValidator(BaseValidator):
     """Python-specific standards validator."""
 
-    def validate(self, project_path: Path) -> List[ValidationIssue]:
+    def validate(self, project_path: Path) -> list[ValidationIssue]:
         """Validate Python project against standards."""
         issues = []
 
@@ -72,7 +72,7 @@ class PythonValidator(BaseValidator):
         file_str = str(file_path)
         return any(re.search(pattern, file_str) for pattern in skip_patterns)
 
-    def _check_file_structure(self, project_path: Path) -> List[ValidationIssue]:
+    def _check_file_structure(self, project_path: Path) -> list[ValidationIssue]:
         """Check project file structure."""
         issues = []
         structure_rules = self.rules.get("file_structure", {})
@@ -105,7 +105,7 @@ class PythonValidator(BaseValidator):
 
         return issues
 
-    def _validate_python_file(self, file_path: Path) -> List[ValidationIssue]:
+    def _validate_python_file(self, file_path: Path) -> list[ValidationIssue]:
         """Validate a single Python file."""
         issues = []
 
@@ -153,7 +153,7 @@ class PythonValidator(BaseValidator):
 
     def _check_naming_conventions(
         self, tree: ast.AST, file_path: Path
-    ) -> List[ValidationIssue]:
+    ) -> list[ValidationIssue]:
         """Check Python naming conventions."""
         issues = []
         naming_rules = self.rules.get("naming", {})
@@ -225,7 +225,7 @@ class PythonValidator(BaseValidator):
 
         return issues
 
-    def _check_imports(self, tree: ast.AST, file_path: Path) -> List[ValidationIssue]:
+    def _check_imports(self, tree: ast.AST, file_path: Path) -> list[ValidationIssue]:
         """Check import statements."""
         issues = []
         import_rules = self.rules.get("imports", {})
@@ -242,8 +242,8 @@ class PythonValidator(BaseValidator):
         return issues
 
     def _check_import_order(
-        self, tree: ast.AST, file_path: Path, expected_order: List[str]
-    ) -> List[ValidationIssue]:
+        self, tree: ast.AST, file_path: Path, expected_order: list[str]
+    ) -> list[ValidationIssue]:
         """Check that imports follow the expected order."""
         issues = []
 
@@ -254,7 +254,7 @@ class PythonValidator(BaseValidator):
 
     def _check_unused_imports(
         self, tree: ast.AST, file_path: Path
-    ) -> List[ValidationIssue]:
+    ) -> list[ValidationIssue]:
         """Check for unused imports."""
         issues = []
 
@@ -265,7 +265,7 @@ class PythonValidator(BaseValidator):
 
     def _check_code_structure(
         self, tree: ast.AST, file_path: Path
-    ) -> List[ValidationIssue]:
+    ) -> list[ValidationIssue]:
         """Check code structure and organization."""
         issues = []
         structure_rules = self.rules.get("code_structure", {})
@@ -306,7 +306,7 @@ class PythonValidator(BaseValidator):
 
         return issues
 
-    def _check_config_files(self, project_path: Path) -> List[ValidationIssue]:
+    def _check_config_files(self, project_path: Path) -> list[ValidationIssue]:
         """Check configuration files."""
         issues = []
         config_rules = self.rules.get("configuration", {})
@@ -331,8 +331,8 @@ class PythonValidator(BaseValidator):
         return issues
 
     def _check_pyproject_toml(
-        self, file_path: Path, config_rules: Dict[str, Any]
-    ) -> List[ValidationIssue]:
+        self, file_path: Path, config_rules: dict[str, Any]
+    ) -> list[ValidationIssue]:
         """Check pyproject.toml configuration."""
         issues = []
 
@@ -383,8 +383,8 @@ class PythonValidator(BaseValidator):
         return issues
 
     def _check_requirements_file(
-        self, file_path: Path, config_rules: Dict[str, Any]
-    ) -> List[ValidationIssue]:
+        self, file_path: Path, config_rules: dict[str, Any]
+    ) -> list[ValidationIssue]:
         """Check requirements file."""
         issues = []
 
@@ -429,7 +429,7 @@ class PythonValidator(BaseValidator):
 class TypeScriptValidator(BaseValidator):
     """TypeScript-specific standards validator."""
 
-    def validate(self, project_path: Path) -> List[ValidationIssue]:
+    def validate(self, project_path: Path) -> list[ValidationIssue]:
         """Validate TypeScript project against standards."""
         issues = []
 
@@ -462,7 +462,7 @@ class TypeScriptValidator(BaseValidator):
         file_str = str(file_path)
         return any(re.search(pattern, file_str) for pattern in skip_patterns)
 
-    def _check_file_structure(self, project_path: Path) -> List[ValidationIssue]:
+    def _check_file_structure(self, project_path: Path) -> list[ValidationIssue]:
         """Check project file structure."""
         issues = []
         structure_rules = self.rules.get("file_structure", {})
@@ -495,7 +495,7 @@ class TypeScriptValidator(BaseValidator):
 
         return issues
 
-    def _validate_typescript_file(self, file_path: Path) -> List[ValidationIssue]:
+    def _validate_typescript_file(self, file_path: Path) -> list[ValidationIssue]:
         """Validate a single TypeScript file."""
         issues = []
 
@@ -527,7 +527,7 @@ class TypeScriptValidator(BaseValidator):
 
     def _check_naming_conventions(
         self, content: str, file_path: Path
-    ) -> List[ValidationIssue]:
+    ) -> list[ValidationIssue]:
         """Check TypeScript naming conventions."""
         issues = []
         naming_rules = self.rules.get("naming", {})
@@ -568,7 +568,7 @@ class TypeScriptValidator(BaseValidator):
 
         return issues
 
-    def _check_imports(self, content: str, file_path: Path) -> List[ValidationIssue]:
+    def _check_imports(self, content: str, file_path: Path) -> list[ValidationIssue]:
         """Check import statements."""
         issues = []
         import_rules = self.rules.get("imports", {})
@@ -581,8 +581,8 @@ class TypeScriptValidator(BaseValidator):
         return issues
 
     def _check_import_order(
-        self, content: str, file_path: Path, expected_order: List[str]
-    ) -> List[ValidationIssue]:
+        self, content: str, file_path: Path, expected_order: list[str]
+    ) -> list[ValidationIssue]:
         """Check that imports follow the expected order."""
         issues = []
 
@@ -593,7 +593,7 @@ class TypeScriptValidator(BaseValidator):
 
     def _check_code_structure(
         self, content: str, file_path: Path
-    ) -> List[ValidationIssue]:
+    ) -> list[ValidationIssue]:
         """Check code structure and organization."""
         issues = []
         structure_rules = self.rules.get("code_structure", {})
@@ -608,7 +608,7 @@ class TypeScriptValidator(BaseValidator):
 
         return issues
 
-    def _check_config_files(self, project_path: Path) -> List[ValidationIssue]:
+    def _check_config_files(self, project_path: Path) -> list[ValidationIssue]:
         """Check configuration files."""
         issues = []
         config_rules = self.rules.get("configuration", {})
@@ -626,8 +626,8 @@ class TypeScriptValidator(BaseValidator):
         return issues
 
     def _check_package_json(
-        self, file_path: Path, config_rules: Dict[str, Any]
-    ) -> List[ValidationIssue]:
+        self, file_path: Path, config_rules: dict[str, Any]
+    ) -> list[ValidationIssue]:
         """Check package.json configuration."""
         issues = []
 
@@ -678,8 +678,8 @@ class TypeScriptValidator(BaseValidator):
         return issues
 
     def _check_tsconfig_json(
-        self, file_path: Path, config_rules: Dict[str, Any]
-    ) -> List[ValidationIssue]:
+        self, file_path: Path, config_rules: dict[str, Any]
+    ) -> list[ValidationIssue]:
         """Check tsconfig.json configuration."""
         issues = []
 
@@ -716,7 +716,7 @@ class TypeScriptValidator(BaseValidator):
         return issues
 
 
-def get_validator(language: str, rules: Dict[str, Any]) -> BaseValidator:
+def get_validator(language: str, rules: dict[str, Any]) -> BaseValidator:
     """Get a validator for a specific language."""
     validators = {
         "python": PythonValidator,

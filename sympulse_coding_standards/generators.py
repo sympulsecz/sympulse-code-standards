@@ -4,7 +4,7 @@ import os
 import shutil
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
+from typing import Optional, Any, Union
 from dataclasses import dataclass
 
 import yaml
@@ -20,10 +20,10 @@ class ProjectTemplate:
 
     name: str
     description: str
-    languages: List[str]
-    structure: Dict[str, Any]
-    files: Dict[str, str]  # filename -> template content
-    dependencies: Dict[str, List[str]]  # language -> list of deps
+    languages: list[str]
+    structure: dict[str, Any]
+    files: dict[str, str]  # filename -> template content
+    dependencies: dict[str, list[str]]  # language -> list of deps
 
 
 class ProjectGenerator:
@@ -202,7 +202,7 @@ class ProjectGenerator:
             except Exception as e:
                 logger.warning(f"Failed to generate {file_path}: {e}")
 
-    def _get_template_vars(self, language: str) -> Dict[str, Any]:
+    def _get_template_vars(self, language: str) -> dict[str, Any]:
         """Get template variables for a language."""
         vars = {
             "python": {
@@ -426,7 +426,7 @@ target/
         except Exception as e:
             logger.warning(f"Failed to install pre-commit hooks: {e}")
 
-    def list_templates(self) -> List[Dict[str, Any]]:
+    def list_templates(self) -> list[dict[str, Any]]:
         """List available project templates."""
         templates = []
 

@@ -16,10 +16,19 @@ class ProjectConfigurator:
     def __init__(self):
         self.config = {}
 
-    def configure_project(self, language: str, project_name: str) -> Dict[str, Any]:
+    def configure_project(
+        self, language: Optional[str], project_name: str
+    ) -> Dict[str, Any]:
         """Run the full interactive configuration process."""
         console.print("\n[bold blue]🎯 Project Configuration[/bold blue]")
         console.print("Let's configure your project with the features you need.\n")
+
+        # Language selection (if not provided)
+        if not language:
+            language = self._select_language()
+
+        # Store language in config
+        self.config["language"] = language
 
         # Basic project info
         self.config.update(self._get_basic_info(project_name))
@@ -50,6 +59,27 @@ class ProjectConfigurator:
         self._show_final_configuration()
 
         return self.config
+
+    def _select_language(self) -> str:
+        """Select programming language interactively."""
+        console.print(Panel("🐍 Programming Language Selection", style="green"))
+
+        language = Prompt.ask(
+            "Select programming language",
+            choices=[
+                "python",
+                "typescript",
+                "go",
+                "javascript",
+                "java",
+                "rust",
+                "csharp",
+            ],
+            default="python",
+        )
+
+        console.print(f"✅ Selected language: {language}")
+        return language
 
     def _get_basic_info(self, project_name: str) -> Dict[str, Any]:
         """Get basic project information."""

@@ -16,7 +16,9 @@ from src.cli.commands.base import (
 
 @click.command()
 @click.option(
-    "--language", "-l", required=True, help="Programming language for the project"
+    "--language",
+    "-l",
+    help="Programming language for the project (will prompt if not provided)",
 )
 @click.option("--name", "-n", required=True, help="Project name")
 @click.option(
@@ -36,7 +38,7 @@ from src.cli.commands.base import (
 )
 @click.option("--non-interactive", is_flag=True, help="Skip interactive configuration")
 def init_project(
-    language: str,
+    language: Optional[str],
     name: str,
     path: Optional[Path],
     template: Optional[str],
@@ -62,10 +64,20 @@ def init_project(
         config = {}
         if use_interactive:
             configurator = ProjectConfigurator()
+            # If language is not provided, it will be prompted for in the interactive flow
             config = configurator.configure_project(language, name)
+            # Get the language from the configuration (either provided or selected interactively)
+            language = config.get("language", language)
         else:
             # Use default configuration for non-interactive mode
+            # Language must be provided for non-interactive mode
+            if not language:
+                raise click.UsageError(
+                    "Language must be specified when using --non-interactive mode"
+                )
+
             config = {
+                "language": language,
                 "description": f"A {name} project with coding standards",
                 "author": "",
                 "email": "",
@@ -95,6 +107,12 @@ def init_project(
                     "coverage_threshold": 80,
                 },
             }
+
+        # Ensure we have a language
+        if not language:
+            raise click.UsageError(
+                "Language must be specified or selected interactively"
+            )
 
         with create_progress_bar("Initializing project...") as progress:
             task = progress.add_task("Initializing project...", total=None)

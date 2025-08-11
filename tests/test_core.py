@@ -23,7 +23,7 @@ class TestStandardsConfig:
             strict_mode=True,
             auto_fix=False,
         )
-        
+
         assert config.version == "1.0.0"
         assert config.languages == ["python", "typescript"]
         assert config.strict_mode is True
@@ -32,7 +32,7 @@ class TestStandardsConfig:
     def test_standards_config_defaults(self):
         """Test StandardsConfig default values."""
         config = StandardsConfig(version="1.0.0")
-        
+
         assert config.languages == []
         assert config.strict_mode is False
         assert config.auto_fix is True
@@ -50,7 +50,7 @@ class TestValidationResult:
             suggestions=["suggestion1"],
             score=95.0,
         )
-        
+
         assert result.is_compliant is True
         assert result.violations == ["error1"]
         assert result.warnings == ["warning1"]
@@ -60,7 +60,7 @@ class TestValidationResult:
     def test_validation_result_defaults(self):
         """Test ValidationResult default values."""
         result = ValidationResult(is_compliant=False)
-        
+
         assert result.violations == []
         assert result.warnings == []
         assert result.suggestions == []
@@ -73,7 +73,7 @@ class TestStandardsManager:
     def test_standards_manager_creation(self):
         """Test creating a StandardsManager instance."""
         manager = StandardsManager()
-        
+
         assert manager.standards_path is not None
         assert isinstance(manager.config, StandardsConfig)
         assert manager.standards_cache == {}
@@ -81,7 +81,7 @@ class TestStandardsManager:
     def test_standards_manager_custom_path(self, tmp_path):
         """Test creating StandardsManager with custom path."""
         manager = StandardsManager(standards_path=tmp_path)
-        
+
         assert manager.standards_path == tmp_path
 
     @patch("sympulse_coding_standards.core.toml.load")
@@ -94,12 +94,12 @@ class TestStandardsManager:
             "auto_fix": False,
         }
         mock_toml_load.return_value = mock_config
-        
+
         config_file = tmp_path / "config.toml"
         config_file.touch()
-        
+
         manager = StandardsManager(standards_path=tmp_path)
-        
+
         assert manager.config.version == "2.0.0"
         assert manager.config.languages == ["python"]
         assert manager.config.strict_mode is True
@@ -108,8 +108,8 @@ class TestStandardsManager:
     def test_load_config_defaults(self):
         """Test loading default config when no file exists."""
         manager = StandardsManager()
-        
-        assert manager.config.version == "0.1.0"
+
+        assert manager.config.version == "0.2.0"
         assert "python" in manager.config.languages
         assert "typescript" in manager.config.languages
 
@@ -117,7 +117,7 @@ class TestStandardsManager:
         """Test getting available standards when none exist."""
         manager = StandardsManager(standards_path=tmp_path)
         standards = manager.get_available_standards()
-        
+
         assert standards == []
 
     @patch("builtins.open")
@@ -133,16 +133,16 @@ class TestStandardsManager:
             "maintainer": "Team",
         }
         mock_json_load.return_value = mock_metadata
-        
+
         # Create standards directory structure
         python_dir = tmp_path / "python"
         python_dir.mkdir()
         metadata_file = python_dir / "metadata.json"
         metadata_file.touch()
-        
+
         manager = StandardsManager(standards_path=tmp_path)
         standards = manager.get_available_standards()
-        
+
         assert len(standards) == 1
         assert standards[0].name == "python"
         assert standards[0].version == "1.0.0"
@@ -150,8 +150,10 @@ class TestStandardsManager:
     def test_get_standard_not_found(self):
         """Test getting a standard that doesn't exist."""
         manager = StandardsManager()
-        
-        with pytest.raises(ValueError, match="Standards for language 'nonexistent' not found"):
+
+        with pytest.raises(
+            ValueError, match="Standards for language 'nonexistent' not found"
+        ):
             manager.get_standard("nonexistent")
 
     def test_detect_languages_python(self, tmp_path):
@@ -159,10 +161,10 @@ class TestStandardsManager:
         # Create pyproject.toml
         pyproject_file = tmp_path / "pyproject.toml"
         pyproject_file.touch()
-        
+
         manager = StandardsManager()
         languages = manager._detect_languages(tmp_path)
-        
+
         assert "python" in languages
 
     def test_detect_languages_typescript(self, tmp_path):
@@ -170,10 +172,10 @@ class TestStandardsManager:
         # Create package.json
         package_file = tmp_path / "package.json"
         package_file.touch()
-        
+
         manager = StandardsManager()
         languages = manager._detect_languages(tmp_path)
-        
+
         assert "typescript" in languages
 
     def test_detect_languages_multiple(self, tmp_path):
@@ -183,17 +185,17 @@ class TestStandardsManager:
         pyproject_file.touch()
         package_file = tmp_path / "package.json"
         package_file.touch()
-        
+
         manager = StandardsManager()
         languages = manager._detect_languages(tmp_path)
-        
+
         assert "python" in languages
         assert "typescript" in languages
 
     def test_validate_project_path_not_exists(self):
         """Test validating a project that doesn't exist."""
         manager = StandardsManager()
-        
+
         with pytest.raises(ValueError, match="Project path does not exist"):
             manager.validate_project("/nonexistent/path")
 
@@ -203,7 +205,7 @@ class TestStandardsManager:
         # Create a Python project
         pyproject_file = tmp_path / "pyproject.toml"
         pyproject_file.touch()
-        
+
         mock_result = ValidationResult(
             is_compliant=True,
             violations=[],
@@ -211,10 +213,10 @@ class TestStandardsManager:
             suggestions=[],
         )
         mock_validate_language.return_value = mock_result
-        
+
         manager = StandardsManager()
         result = manager.validate_project(tmp_path)
-        
+
         assert result.is_compliant is True
         assert result.score == 100.0
 
@@ -224,7 +226,7 @@ class TestStandardsManager:
         # Create a Python project
         pyproject_file = tmp_path / "pyproject.toml"
         pyproject_file.touch()
-        
+
         mock_result = ValidationResult(
             is_compliant=False,
             violations=["Missing required file"],
@@ -232,10 +234,10 @@ class TestStandardsManager:
             suggestions=[],
         )
         mock_validate_language.return_value = mock_result
-        
+
         manager = StandardsManager()
         result = manager.validate_project(tmp_path)
-        
+
         assert result.is_compliant is False
         assert result.score < 100.0
         assert len(result.violations) == 1
@@ -243,6 +245,6 @@ class TestStandardsManager:
     def test_update_project_standards_path_not_exists(self):
         """Test updating standards for a project that doesn't exist."""
         manager = StandardsManager()
-        
+
         with pytest.raises(ValueError, match="Project path does not exist"):
             manager.update_project_standards("/nonexistent/path")

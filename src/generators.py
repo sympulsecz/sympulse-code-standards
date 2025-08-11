@@ -50,6 +50,48 @@ class ProjectGenerator:
             lstrip_blocks=True,
         )
 
+    def _prepare_template_vars(
+        self, language: str, config: dict[str, Any], **additional_vars
+    ) -> dict[str, Any]:
+        """Prepare template variables by removing duplicates and adding additional variables.
+
+        Args:
+            language: Programming language
+            config: Project configuration
+            **additional_vars: Additional variables to include
+
+        Returns:
+            Cleaned template variables dictionary
+        """
+        template_vars = self._get_template_vars(language, config)
+
+        # Remove commonly duplicated keys to prevent conflicts
+        keys_to_remove = ["language", "contributing", "code_quality"]
+        for key in keys_to_remove:
+            template_vars.pop(key, None)
+
+        # Add additional variables
+        template_vars.update(additional_vars)
+
+        return template_vars
+
+    def _render_template(self, template_content: str, **template_vars) -> str:
+        """Render a Jinja2 template with the given variables.
+
+        Args:
+            template_content: Raw template content
+            **template_vars: Variables to render the template with
+
+        Returns:
+            Rendered template content
+        """
+        try:
+            jinja_template = Template(template_content)
+            return jinja_template.render(**template_vars)
+        except Exception as e:
+            logger.warning(f"Failed to render template: {e}")
+            return template_content
+
     def create_project(
         self,
         path: Union[str, Path],
@@ -200,17 +242,13 @@ class ProjectGenerator:
         """Generate project files from templates."""
         for file_path, content in template.files.items():
             try:
-                # Render template content
-                jinja_template = Template(content)
-                template_vars = self._get_template_vars(language, config or {})
-                # Remove language from template_vars to avoid duplication
-                if "language" in template_vars:
-                    template_vars.pop("language")
-                rendered_content = jinja_template.render(
-                    language=language,
-                    project_name=path.name,
-                    **template_vars,
+                # Prepare template variables
+                template_vars = self._prepare_template_vars(
+                    language, config or {}, project_name=path.name
                 )
+
+                # Render template content
+                rendered_content = self._render_template(content, **template_vars)
 
                 # Create target file
                 target_path = path / file_path
@@ -272,20 +310,19 @@ class ProjectGenerator:
             with open(contributing_template) as f:
                 template_content = f.read()
 
-            jinja_template = Template(template_content)
-            template_vars = self._get_template_vars(language, config)
-            # Remove contributing and code_quality from template_vars to avoid duplication
-            template_vars.pop("contributing", None)
-            template_vars.pop("code_quality", None)
-            template_vars.pop("language", None)
-            rendered_content = jinja_template.render(
-                language=language,
+            # Prepare template variables
+            template_vars = self._prepare_template_vars(
+                language,
+                config,
                 project_name=path.name,
                 contributing=config.get("contributing", {}),
                 code_quality=config.get("code_quality", {}),
-                **template_vars,
             )
 
+            # Render template
+            rendered_content = self._render_template(template_content, **template_vars)
+
+            # Write file
             contributing_path = path / "CONTRIBUTING.md"
             with open(contributing_path, "w") as f:
                 f.write(rendered_content)
@@ -299,15 +336,15 @@ class ProjectGenerator:
             with open(coc_template) as f:
                 template_content = f.read()
 
-            jinja_template = Template(template_content)
-            # Remove language from config to avoid duplication
-            config_copy = config.copy()
-            config_copy.pop("language", None)
-            rendered_content = jinja_template.render(
-                project_name=path.name,
-                **config_copy,
+            # Prepare template variables
+            template_vars = self._prepare_template_vars(
+                config.get("language", "unknown"), config, project_name=path.name
             )
 
+            # Render template
+            rendered_content = self._render_template(template_content, **template_vars)
+
+            # Write file
             coc_path = path / "CODE_OF_CONDUCT.md"
             with open(coc_path, "w") as f:
                 f.write(rendered_content)
@@ -331,15 +368,15 @@ class ProjectGenerator:
             with open(bug_template) as f:
                 template_content = f.read()
 
-            jinja_template = Template(template_content)
-            # Remove language from config to avoid duplication
-            config_copy = config.copy()
-            config_copy.pop("language", None)
-            rendered_content = jinja_template.render(
-                project_name=path.name,
-                **config_copy,
+            # Prepare template variables
+            template_vars = self._prepare_template_vars(
+                config.get("language", "unknown"), config, project_name=path.name
             )
 
+            # Render template
+            rendered_content = self._render_template(template_content, **template_vars)
+
+            # Write file
             bug_path = templates_dir / "bug_report.md"
             with open(bug_path, "w") as f:
                 f.write(rendered_content)
@@ -356,15 +393,15 @@ class ProjectGenerator:
             with open(feature_template) as f:
                 template_content = f.read()
 
-            jinja_template = Template(template_content)
-            # Remove language from config to avoid duplication
-            config_copy = config.copy()
-            config_copy.pop("language", None)
-            rendered_content = jinja_template.render(
-                project_name=path.name,
-                **config_copy,
+            # Prepare template variables
+            template_vars = self._prepare_template_vars(
+                config.get("language", "unknown"), config, project_name=path.name
             )
 
+            # Render template
+            rendered_content = self._render_template(template_content, **template_vars)
+
+            # Write file
             feature_path = templates_dir / "feature_request.md"
             with open(feature_path, "w") as f:
                 f.write(rendered_content)
@@ -380,15 +417,15 @@ class ProjectGenerator:
             with open(pr_template) as f:
                 template_content = f.read()
 
-            jinja_template = Template(template_content)
-            # Remove language from config to avoid duplication
-            config_copy = config.copy()
-            config_copy.pop("language", None)
-            rendered_content = jinja_template.render(
-                project_name=path.name,
-                **config_copy,
+            # Prepare template variables
+            template_vars = self._prepare_template_vars(
+                config.get("language", "unknown"), config, project_name=path.name
             )
 
+            # Render template
+            rendered_content = self._render_template(template_content, **template_vars)
+
+            # Write file
             pr_path = path / ".github" / "PULL_REQUEST_TEMPLATE.md"
             pr_path.parent.mkdir(parents=True, exist_ok=True)
             with open(pr_path, "w") as f:
@@ -403,14 +440,15 @@ class ProjectGenerator:
             with open(commit_template) as f:
                 template_content = f.read()
 
-            jinja_template = Template(template_content)
-            # Remove language from config to avoid duplication
-            config_copy = config.copy()
-            config_copy.pop("language", None)
-            rendered_content = jinja_template.render(
-                **config_copy,
+            # Prepare template variables
+            template_vars = self._prepare_template_vars(
+                config.get("language", "unknown"), config
             )
 
+            # Render template
+            rendered_content = self._render_template(template_content, **template_vars)
+
+            # Write file
             gitmessage_path = path / ".gitmessage"
             with open(gitmessage_path, "w") as f:
                 f.write(rendered_content)

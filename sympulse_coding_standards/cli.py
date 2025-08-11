@@ -14,10 +14,12 @@ from rich import print as rprint
 from .core import StandardsManager, ValidationResult
 from .generators import ProjectGenerator
 
+
 app = typer.Typer(
     name="scs",
     help="Sympulse Coding Standards - Manage coding standards across projects",
     add_completion=False,
+    no_args_is_help=True,
 )
 
 console = Console()

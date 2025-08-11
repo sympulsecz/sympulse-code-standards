@@ -103,7 +103,7 @@ class TestVersionManager:
             assert version_manager.versions["versions"]["python_target"] == "py314"
             mock_update_configs.assert_called_once_with("3.14", "py314")
             mock_update_script.assert_called_once_with("3.14")
-            mock_update_generators.assert_called_once_with("3.14")
+            mock_update_generators.assert_called_once_with("3.14", "python")
 
     @patch("src.lib.version_manager.Path")
     def test_update_node_version(self, mock_path, version_manager, tmp_path):
@@ -120,7 +120,7 @@ class TestVersionManager:
 
             assert version_manager.versions["versions"]["node"] == "26"
             mock_update_configs.assert_called_once_with("26")
-            mock_update_generators.assert_called_once_with("26")
+            mock_update_generators.assert_called_once_with("26", "node")
 
     @patch("src.lib.version_manager.Path")
     def test_update_project_version(self, mock_path, version_manager, tmp_path):

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-import typer
+import click
 from rich.panel import Panel
 
 from src.core import StandardsManager
@@ -14,11 +14,16 @@ from src.cli.commands.base import (
 )
 
 
+@click.command()
+@click.argument(
+    "path",
+    type=click.Path(path_type=Path, file_okay=False, dir_okay=True),
+    default=Path.cwd(),
+)
+@click.option("--detailed", "-d", is_flag=True, help="Show detailed audit report")
 def audit_project(
-    path: Path = typer.Argument(Path.cwd(), help="Project path to audit"),
-    detailed: bool = typer.Option(
-        False, "--detailed", "-d", help="Show detailed audit report"
-    ),
+    path: Path,
+    detailed: bool,
 ):
     """Audit project compliance with coding standards."""
     try:

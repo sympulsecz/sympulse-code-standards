@@ -1,15 +1,16 @@
 """List available coding standards."""
 
+import click
 from rich.table import Table
 
 from src.core import StandardsManager
 from src.cli.commands.base import (
-    create_command_with_main_function,
     handle_generic_error,
     console,
 )
 
 
+@click.command()
 def list_standards():
     """List available coding standards."""
     try:

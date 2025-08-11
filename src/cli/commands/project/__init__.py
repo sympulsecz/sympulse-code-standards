@@ -15,21 +15,30 @@ class ProjectCommandGroup(NestedCommandGroup):
 
     def register_commands(self):
         """Register all project subcommands."""
-        self.app.command(
-            name="init", help="Initialize a new project with coding standards"
-        )(init_project)
 
-        self.app.command(
-            name="validate", help="Validate a project against coding standards"
-        )(validate_project)
+        self.add_command(
+            init_project,
+            name="init",
+            help_text="Initialize a new project with coding standards",
+        )
 
-        self.app.command(
-            name="update", help="Update project standards to latest version"
-        )(update_project)
+        self.add_command(
+            validate_project,
+            name="validate",
+            help_text="Validate a project against coding standards",
+        )
 
-        self.app.command(
-            name="audit", help="Audit project compliance with coding standards"
-        )(audit_project)
+        self.add_command(
+            update_project,
+            name="update",
+            help_text="Update project standards to latest version",
+        )
+
+        self.add_command(
+            audit_project,
+            name="audit",
+            help_text="Audit project compliance with coding standards",
+        )
 
 
 # Create the project command group instance

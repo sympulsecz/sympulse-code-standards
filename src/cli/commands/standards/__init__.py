@@ -15,13 +15,8 @@ class StandardsCommandGroup(CommandGroup):
 
     def register_commands(self):
         """Register all standards subcommands."""
-        self.app.command(name="list", help="List available coding standards")(
-            list_standards
-        )
-
-        self.app.command(
-            name="show", help="Show details of a specific coding standard"
-        )(show_standards)
+        self.group.add_command(list_standards, name="list")
+        self.group.add_command(show_standards, name="show")
 
 
 # Create the standards command group instance

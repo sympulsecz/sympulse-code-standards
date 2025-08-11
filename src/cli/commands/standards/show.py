@@ -1,18 +1,19 @@
 """Show details of a specific coding standard."""
 
-import typer
+import click
 from rich.panel import Panel
 
 from src.core import StandardsManager
 from src.cli.commands.base import (
-    create_command_with_main_function,
     handle_generic_error,
     console,
 )
 
 
+@click.command()
+@click.argument("standard_name")
 def show_standards(
-    standard_name: str = typer.Argument(..., help="Name of the standard to show"),
+    standard_name: str,
 ):
     """Show details of a specific coding standard."""
     try:
@@ -29,7 +30,7 @@ def show_standards(
 
         if not standard:
             console.print(f"[red]Error: Standard '{standard_name}' not found[/red]")
-            raise typer.Exit(1)
+            raise click.Abort()
 
         # Display standard details
         _display_standard_details(standard)

@@ -13,13 +13,8 @@ class ToolsCommandGroup(CommandGroup):
 
     def register_commands(self):
         """Register all tools subcommands."""
-        self.app.command(
-            name="format", help="Format code according to coding standards"
-        )(format_code)
-
-        self.app.command(name="lint", help="Lint code according to coding standards")(
-            lint_code
-        )
+        self.group.add_command(format_code, name="format")
+        self.group.add_command(lint_code, name="lint")
 
 
 # Create the tools command group instance

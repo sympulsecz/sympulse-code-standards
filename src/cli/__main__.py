@@ -1,18 +1,15 @@
 """Main CLI application for Sympulse Coding Standards."""
 
-import typer
+import click
 from src.cli.commands import project_group, standards_group, tools_group
 from src.cli.commands.base import CommandRegistry
 
 
-def create_main_app() -> typer.Typer:
+def create_main_app() -> click.Group:
     """Create the main CLI application with command groups."""
-    app = typer.Typer(
+    app = click.Group(
         name="scs",
         help="Sympulse Coding Standards - Manage coding standards across projects",
-        add_completion=False,
-        invoke_without_command=False,
-        no_args_is_help=False,
     )
 
     # Register command groups
@@ -23,14 +20,7 @@ def create_main_app() -> typer.Typer:
 
     # Add command groups to main app
     for group_name, group in registry.get_all_groups().items():
-        app.add_typer(group.get_app(), name=group_name)
-
-    @app.callback(invoke_without_command=True)
-    def help_callback(ctx: typer.Context):
-        """Show help when no subcommand is provided."""
-        if ctx.invoked_subcommand is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
+        app.add_command(group.get_group(), name=group_name)
 
     return app
 

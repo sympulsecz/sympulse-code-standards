@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-import typer
+import click
 
 from src.core import StandardsManager
 from src.cli.commands.base import (
@@ -13,14 +13,24 @@ from src.cli.commands.base import (
 )
 
 
+@click.command()
+@click.argument(
+    "path",
+    type=click.Path(path_type=Path, file_okay=False, dir_okay=True),
+    default=Path.cwd(),
+)
+@click.option("--strict", "-s", is_flag=True, help="Enable strict validation")
+@click.option(
+    "--output",
+    "-o",
+    type=click.Choice(["text", "json", "html"]),
+    default="text",
+    help="Output format (text, json, html)",
+)
 def validate_project(
-    path: Path = typer.Argument(Path.cwd(), help="Project path to validate"),
-    strict: bool = typer.Option(
-        False, "--strict", "-s", help="Enable strict validation"
-    ),
-    output: str = typer.Option(
-        "text", "--output", "-o", help="Output format (text, json, html)"
-    ),
+    path: Path,
+    strict: bool,
+    output: str,
 ):
     """Validate a project against coding standards."""
     try:
@@ -38,7 +48,7 @@ def validate_project(
         _display_validation_result(result, output)
 
         if not result.is_compliant and strict:
-            raise typer.Exit(1)
+            raise click.Abort()
 
     except Exception as e:
         handle_generic_error(e, "validate")

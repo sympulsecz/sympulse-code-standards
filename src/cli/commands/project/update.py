@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Optional
 
-import typer
+import click
 
 from src.core import StandardsManager
 from src.cli.commands.base import (
@@ -14,17 +14,22 @@ from src.cli.commands.base import (
 )
 
 
+@click.command()
+@click.argument(
+    "path",
+    type=click.Path(path_type=Path, file_okay=False, dir_okay=True),
+    default=Path.cwd(),
+)
+@click.option("--language", "-l", help="Specific language to update")
+@click.option("--version", "-v", help="Standards version to update to")
+@click.option(
+    "--force", "-f", is_flag=True, help="Force update even if conflicts exist"
+)
 def update_project(
-    path: Path = typer.Argument(Path.cwd(), help="Project path to update"),
-    language: Optional[str] = typer.Option(
-        None, "--language", "-l", help="Specific language to update"
-    ),
-    version: Optional[str] = typer.Option(
-        None, "--version", "-v", help="Standards version to update to"
-    ),
-    force: bool = typer.Option(
-        False, "--force", "-f", help="Force update even if conflicts exist"
-    ),
+    path: Path,
+    language: Optional[str],
+    version: Optional[str],
+    force: bool,
 ):
     """Update project standards to latest version."""
     try:
@@ -41,7 +46,7 @@ def update_project(
                 console.print(f"\n✅ Project standards updated successfully!")
             else:
                 progress.update(task, description="Failed to update standards")
-                raise typer.Exit(1)
+                raise click.Abort()
 
     except Exception as e:
         handle_generic_error(e, "update")

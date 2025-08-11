@@ -1,13 +1,14 @@
-import typer
+import click
 
 
+@click.command()
+@click.argument("path", default=".")
+@click.option("--language", "-l", default="auto", help="Programming language to format")
 def format_code(
-    path: str = typer.Argument(".", help="Path to format (file or directory)"),
-    language: str = typer.Option(
-        "auto", "--language", "-l", help="Programming language to format"
-    ),
+    path: str,
+    language: str,
 ):
     """Format code according to coding standards."""
-    typer.echo(f"Formatting code at {path} for language: {language}")
+    click.echo(f"Formatting code at {path} for language: {language}")
     # Implementation would go here
-    typer.echo("Code formatting completed!")
+    click.echo("Code formatting completed!")

@@ -1,15 +1,16 @@
-import typer
+import click
 
 
+@click.command()
+@click.argument("path", default=".")
+@click.option("--strict", "-s", is_flag=True, help="Enable strict linting rules")
 def lint_code(
-    path: str = typer.Argument(".", help="Path to lint (file or directory)"),
-    strict: bool = typer.Option(
-        False, "--strict", "-s", help="Enable strict linting rules"
-    ),
+    path: str,
+    strict: bool,
 ):
     """Lint code according to coding standards."""
-    typer.echo(f"Linting code at {path}")
+    click.echo(f"Linting code at {path}")
     if strict:
-        typer.echo("Using strict linting rules")
+        click.echo("Using strict linting rules")
     # Implementation would go here
-    typer.echo("Linting completed!")
+    click.echo("Linting completed!")

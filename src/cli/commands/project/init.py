@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Optional
 
-import typer
+import click
 from rich import print as rprint
 
 from src.generators import ProjectGenerator
@@ -13,20 +13,25 @@ from src.cli.commands.base import (
 )
 
 
+@click.command()
+@click.option(
+    "--language", "-l", required=True, help="Programming language for the project"
+)
+@click.option("--name", "-n", required=True, help="Project name")
+@click.option(
+    "--path",
+    "-p",
+    type=click.Path(path_type=Path, file_okay=False, dir_okay=True),
+    help="Project path (defaults to current directory)",
+)
+@click.option("--template", "-t", help="Template to use")
+@click.option("--force", "-f", is_flag=True, help="Force overwrite existing files")
 def init_project(
-    language: str = typer.Option(
-        ..., "--language", "-l", help="Programming language for the project"
-    ),
-    name: str = typer.Option(..., "--name", "-n", help="Project name"),
-    path: Optional[Path] = typer.Option(
-        None, "--path", "-p", help="Project path (defaults to current directory)"
-    ),
-    template: Optional[str] = typer.Option(
-        None, "--template", "-t", help="Template to use"
-    ),
-    force: bool = typer.Option(
-        False, "--force", "-f", help="Force overwrite existing files"
-    ),
+    language: str,
+    name: str,
+    path: Optional[Path],
+    template: Optional[str],
+    force: bool,
 ):
     """Initialize a new project with coding standards."""
     try:
@@ -36,8 +41,8 @@ def init_project(
             path = path / name
 
         if path.exists() and not force:
-            if not typer.confirm(f"Directory {path} already exists. Overwrite?"):
-                raise typer.Abort()
+            if not click.confirm(f"Directory {path} already exists. Overwrite?"):
+                raise click.Abort()
 
         with create_progress_bar("Initializing project...") as progress:
             task = progress.add_task("Initializing project...", total=None)
@@ -58,7 +63,7 @@ def init_project(
                 rprint(f"  scs validate")
             else:
                 progress.update(task, description="Failed to create project")
-                raise typer.Exit(1)
+                raise click.Abort()
 
     except Exception as e:
         handle_generic_error(e, "init")

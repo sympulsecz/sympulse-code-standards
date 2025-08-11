@@ -19,3 +19,12 @@ dependencies:
     - "mypy"
     - "pytest"
     - "pytest-cov"
+features:
+  contributing_enabled: true
+  code_of_conduct_enabled: true
+  issue_templates_enabled: true
+  pr_templates_enabled: true
+  git_commit_template: true
+  ci_cd_enabled: false
+  documentation_enabled: false
+  security_enabled: false

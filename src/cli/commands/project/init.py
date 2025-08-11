@@ -7,6 +7,7 @@ import click
 from rich import print as rprint
 
 from src.generators import ProjectGenerator
+from src.cli.prompts import ProjectConfigurator
 from src.cli.commands.base import (
     create_progress_bar,
     handle_generic_error,
@@ -26,12 +27,22 @@ from src.cli.commands.base import (
 )
 @click.option("--template", "-t", help="Template to use")
 @click.option("--force", "-f", is_flag=True, help="Force overwrite existing files")
+@click.option(
+    "--interactive",
+    "-i",
+    is_flag=True,
+    default=True,
+    help="Use interactive configuration (default: True)",
+)
+@click.option("--non-interactive", is_flag=True, help="Skip interactive configuration")
 def init_project(
     language: str,
     name: str,
     path: Optional[Path],
     template: Optional[str],
     force: bool,
+    interactive: bool,
+    non_interactive: bool,
 ):
     """Initialize a new project with coding standards."""
     try:
@@ -44,12 +55,57 @@ def init_project(
             if not click.confirm(f"Directory {path} already exists. Overwrite?"):
                 raise click.Abort()
 
+        # Determine if we should use interactive mode
+        use_interactive = interactive and not non_interactive
+
+        # Get project configuration
+        config = {}
+        if use_interactive:
+            configurator = ProjectConfigurator()
+            config = configurator.configure_project(language, name)
+        else:
+            # Use default configuration for non-interactive mode
+            config = {
+                "description": f"A {name} project with coding standards",
+                "author": "",
+                "email": "",
+                "license": "MIT",
+                "git_enabled": True,
+                "contributing_enabled": True,
+                "code_of_conduct_enabled": True,
+                "issue_templates_enabled": True,
+                "pr_templates_enabled": True,
+                "git_commit_template": True,
+                "ci_cd_enabled": False,
+                "documentation_enabled": False,
+                "security_enabled": False,
+                "contributing": {
+                    "branch_strategy": "github-flow",
+                    "conventional_commits": True,
+                    "pr_required": True,
+                    "review_required": True,
+                    "reviewers_count": 1,
+                    "issue_template_enabled": True,
+                    "cla_required": False,
+                },
+                "code_quality": {
+                    "pre_commit_enabled": True,
+                    "testing_enabled": True,
+                    "coverage_enabled": True,
+                    "coverage_threshold": 80,
+                },
+            }
+
         with create_progress_bar("Initializing project...") as progress:
             task = progress.add_task("Initializing project...", total=None)
 
             generator = ProjectGenerator()
             success = generator.create_project(
-                path=path, language=language, template=template, force=force
+                path=path,
+                language=language,
+                template=template,
+                force=force,
+                config=config,
             )
 
             if success:
@@ -57,10 +113,54 @@ def init_project(
                 rprint(
                     f"\n✅ Project '{name}' initialized with {language} standards at {path}"
                 )
-                rprint(f"\nNext steps:")
+
+                # Show what was created
+                if config:
+                    rprint(f"\n📋 Project Configuration:")
+                    if config.get("description"):
+                        rprint(f"  Description: {config['description']}")
+                    if config.get("author"):
+                        rprint(f"  Author: {config['author']}")
+                    if config.get("license"):
+                        rprint(f"  License: {config['license']}")
+
+                    features = []
+                    if config.get("contributing_enabled"):
+                        features.append("Contributing Guidelines")
+                    if config.get("code_of_conduct_enabled"):
+                        features.append("Code of Conduct")
+                    if config.get("issue_templates_enabled"):
+                        features.append("Issue Templates")
+                    if config.get("pr_templates_enabled"):
+                        features.append("Pull Request Templates")
+                    if config.get("git_commit_template"):
+                        features.append("Conventional Commits")
+                    if config.get("ci_cd_enabled"):
+                        features.append("CI/CD Pipeline")
+                    if config.get("documentation_enabled"):
+                        features.append("Documentation")
+                    if config.get("security_enabled"):
+                        features.append("Security Features")
+
+                    if features:
+                        rprint(f"  Features: {', '.join(features)}")
+
+                rprint(f"\n🚀 Next steps:")
                 rprint(f"  cd {path}")
-                rprint(f"  git init")
+                if config.get("git_enabled", True):
+                    rprint(f"  git status")
                 rprint(f"  scs validate")
+
+                if config.get("contributing_enabled"):
+                    rprint(
+                        f"\n📖 Review the generated CONTRIBUTING.md for contribution guidelines"
+                    )
+
+                if config.get("code_of_conduct_enabled"):
+                    rprint(
+                        f"📜 Review the generated CODE_OF_CONDUCT.md for community guidelines"
+                    )
+
             else:
                 progress.update(task, description="Failed to create project")
                 raise click.Abort()

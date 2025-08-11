@@ -1,0 +1,620 @@
+# Contributing to {{ project_name }}
+
+Thank you for your interest in contributing to {{ project_name }}! This document provides guidelines and information for contributors.
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Development Setup](#development-setup)
+- [Code Style](#code-style)
+- [Branch Strategy](#branch-strategy)
+- [Commit Conventions](#commit-conventions)
+- [Pull Request Process](#pull-request-process)
+- [Issue Reporting](#issue-reporting)
+{% if contributing.cla_required %}
+- [Contributor License Agreement](#contributor-license-agreement)
+{% endif %}
+- [Code of Conduct](#code-of-conduct)
+
+## Getting Started
+
+Before you begin contributing, please ensure you have:
+
+1. **Forked the repository** to your GitHub account
+2. **Cloned your fork** to your local machine
+3. **Set up the upstream remote** to track the original repository
+4. **Created a new branch** for your changes
+
+```bash
+# Fork the repository on GitHub, then:
+git clone https://github.com/YOUR_USERNAME/{{ project_name }}.git
+cd {{ project_name }}
+git remote add upstream https://github.com/ORIGINAL_OWNER/{{ project_name }}.git
+```
+
+## Development Setup
+
+### Prerequisites
+
+{% if language == "python" %}
+- Python {{ code_quality.python_version or "3.11" }} or higher
+- pip or poetry for dependency management
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/{{ project_name }}.git
+cd {{ project_name }}
+
+# Install dependencies
+{% if code_quality.poetry_enabled %}
+poetry install
+poetry shell
+{% else %}
+pip install -r requirements.txt
+# or for development
+pip install -r requirements-dev.txt
+{% endif %}
+
+# Install pre-commit hooks (if enabled)
+{% if code_quality.pre_commit_enabled %}
+pre-commit install
+{% endif %}
+```
+
+{% elif language == "typescript" %}
+- Node.js {{ code_quality.node_version or "20" }} or higher
+- npm, yarn, or pnpm for dependency management
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/{{ project_name }}.git
+cd {{ project_name }}
+
+# Install dependencies
+npm install
+# or
+yarn install
+# or
+pnpm install
+
+# Install pre-commit hooks (if enabled)
+{% if code_quality.pre_commit_enabled %}
+pre-commit install
+{% endif %}
+```
+
+{% elif language == "go" %}
+- Go {{ code_quality.go_version or "1.21" }} or higher
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/{{ project_name }}.git
+cd {{ project_name }}
+
+# Install dependencies
+go mod download
+
+# Install pre-commit hooks (if enabled)
+{% if code_quality.pre_commit_enabled %}
+pre-commit install
+{% endif %}
+```
+
+{% endif %}
+
+### Running Tests
+
+{% if code_quality.testing_enabled %}
+```bash
+{% if language == "python" %}
+# Run all tests
+{% if code_quality.poetry_enabled %}
+poetry run pytest
+{% else %}
+pytest
+{% endif %}
+
+# Run tests with coverage
+{% if code_quality.coverage_enabled %}
+{% if code_quality.poetry_enabled %}
+poetry run pytest --cov=src --cov-report=html
+{% else %}
+pytest --cov=src --cov-report=html
+{% endif %}
+{% endif %}
+
+{% elif language == "typescript" %}
+# Run all tests
+npm test
+# or
+yarn test
+
+# Run tests with coverage
+{% if code_quality.coverage_enabled %}
+npm run test:coverage
+# or
+yarn test:coverage
+{% endif %}
+
+{% elif language == "go" %}
+# Run all tests
+go test ./...
+
+# Run tests with coverage
+{% if code_quality.coverage_enabled %}
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+{% endif %}
+
+{% endif %}
+```
+
+{% endif %}
+
+## Code Style
+
+### General Guidelines
+
+- **Readability**: Write code that is easy to read and understand
+- **Consistency**: Follow the established patterns in the codebase
+- **Documentation**: Document complex logic and public APIs
+- **Testing**: Write tests for new functionality and bug fixes
+
+{% if language == "python" %}
+### Python Style Guide
+
+We follow [PEP 8](https://pep8.org/) with some modifications:
+
+- **Line length**: {{ code_quality.line_length or 88 }} characters
+- **Formatter**: {{ code_quality.formatter or "black" }}
+- **Linter**: {{ code_quality.linter or "flake8" }}
+- **Type checker**: {{ code_quality.type_checker or "mypy" }}
+- **Import sorter**: {{ code_quality.import_sorter or "isort" }}
+
+#### Code Formatting
+
+```bash
+# Format code
+{% if code_quality.formatter == "black" %}
+{% if code_quality.poetry_enabled %}
+poetry run black src/ tests/
+{% else %}
+black src/ tests/
+{% endif %}
+{% elif code_quality.formatter == "autopep8" %}
+{% if code_quality.poetry_enabled %}
+poetry run autopep8 --in-place --recursive src/ tests/
+{% else %}
+autopep8 --in-place --recursive src/ tests/
+{% endif %}
+{% endif %}
+
+# Sort imports
+{% if code_quality.import_sorter == "isort" %}
+{% if code_quality.poetry_enabled %}
+poetry run isort src/ tests/
+{% else %}
+isort src/ tests/
+{% endif %}
+{% endif %}
+
+# Lint code
+{% if code_quality.linter == "flake8" %}
+{% if code_quality.poetry_enabled %}
+poetry run flake8 src/ tests/
+{% else %}
+flake8 src/ tests/
+{% endif %}
+{% elif code_quality.linter == "pylint" %}
+{% if code_quality.poetry_enabled %}
+poetry run pylint src/ tests/
+{% else %}
+pylint src/ tests/
+{% endif %}
+{% endif %}
+
+# Type checking
+{% if code_quality.type_checker == "mypy" %}
+{% if code_quality.poetry_enabled %}
+poetry run mypy src/
+{% else %}
+mypy src/
+{% endif %}
+{% endif %}
+```
+
+{% elif language == "typescript" %}
+### TypeScript Style Guide
+
+We follow modern TypeScript best practices:
+
+- **Line length**: {{ code_quality.line_length or 80 }} characters
+- **Formatter**: {{ code_quality.formatter or "prettier" }}
+- **Linter**: {{ code_quality.linter or "eslint" }}
+- **Target**: {{ code_quality.es_target or "ES2024" }}
+
+#### Code Formatting
+
+```bash
+# Format code
+{% if code_quality.formatter == "prettier" %}
+npm run format
+# or
+yarn format
+{% endif %}
+
+# Lint code
+{% if code_quality.linter == "eslint" %}
+npm run lint
+# or
+yarn lint
+{% endif %}
+
+# Type checking
+npm run type-check
+# or
+yarn type-check
+```
+
+{% elif language == "go" %}
+### Go Style Guide
+
+We follow the [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments):
+
+- **Formatter**: {{ code_quality.formatter or "gofmt" }}
+- **Linter**: {{ code_quality.linter or "golangci-lint" }}
+
+#### Code Formatting
+
+```bash
+# Format code
+go fmt ./...
+
+# Lint code
+{% if code_quality.linter == "golangci-lint" %}
+golangci-lint run
+{% elif code_quality.linter == "golint" %}
+golint ./...
+{% endif %}
+```
+
+{% endif %}
+
+## Branch Strategy
+
+{% if contributing.branch_strategy == "github-flow" %}
+### GitHub Flow
+
+We use a simplified branching strategy based on [GitHub Flow](https://guides.github.com/introduction/flow/):
+
+1. **Main branch** (`main` or `master`) is always deployable
+2. **Feature branches** are created from main for new work
+3. **Pull requests** are used to merge changes back to main
+4. **Deployments** happen immediately after merging to main
+
+**Branch naming convention:**
+- `feature/description-of-feature`
+- `bugfix/description-of-bug`
+- `hotfix/description-of-hotfix`
+- `docs/description-of-documentation`
+
+{% elif contributing.branch_strategy == "git-flow" %}
+### Git Flow
+
+We use [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/) for release management:
+
+1. **Main branch** (`main` or `master`) contains production code
+2. **Develop branch** (`develop`) contains the latest development changes
+3. **Feature branches** are created from develop for new work
+4. **Release branches** are created from develop for release preparation
+5. **Hotfix branches** are created from main for urgent production fixes
+
+**Branch naming convention:**
+- `feature/description-of-feature`
+- `release/version-number`
+- `hotfix/description-of-hotfix`
+
+{% elif contributing.branch_strategy == "trunk-based" %}
+### Trunk-Based Development
+
+We use [Trunk-Based Development](https://trunkbaseddevelopment.com/) for continuous delivery:
+
+1. **Main branch** (`main` or `master`) is the single source of truth
+2. **Short-lived feature branches** are created for small changes
+3. **Direct commits** to main are allowed for small, safe changes
+4. **Feature flags** are used for larger features
+
+**Branch naming convention:**
+- `feature/description-of-feature`
+- `bugfix/description-of-bug`
+
+{% else %}
+### Custom Branch Strategy
+
+{% if contributing.main_branch %}
+- **Main branch**: `{{ contributing.main_branch }}`
+{% endif %}
+{% if contributing.feature_branch_prefix %}
+- **Feature branches**: `{{ contributing.feature_branch_prefix }}description-of-feature`
+{% endif %}
+{% if contributing.hotfix_branch_prefix %}
+- **Hotfix branches**: `{{ contributing.hotfix_branch_prefix }}description-of-hotfix`
+{% endif %}
+
+{% endif %}
+
+## Commit Conventions
+
+{% if contributing.conventional_commits %}
+### Conventional Commits
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+**Format:**
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Types:**
+{% if contributing.commit_types %}
+{{ contributing.commit_types.split(',') | map('trim') | map('lower') | join(', ') }}
+{% else %}
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `test`: Adding missing tests or correcting existing tests
+- `chore`: Changes to the build process or auxiliary tools
+- `ci`: Changes to CI configuration files and scripts
+- `perf`: A code change that improves performance
+- `revert`: Reverts a previous commit
+{% endif %}
+
+**Examples:**
+```bash
+feat: add user authentication system
+fix(auth): resolve login validation issue
+docs: update API documentation
+style: format code according to style guide
+refactor: simplify user service logic
+test: add unit tests for user service
+chore: update dependencies
+ci: add GitHub Actions workflow
+perf: optimize database queries
+revert: revert "feat: add user authentication system"
+```
+
+{% else %}
+### Commit Message Guidelines
+
+- Write clear, descriptive commit messages
+- Use the imperative mood ("add feature" not "added feature")
+- Keep the first line under 50 characters
+- Use the body to explain what and why, not how
+- Reference issues and pull requests when applicable
+
+**Examples:**
+```bash
+Add user authentication system
+Fix login validation issue
+Update API documentation
+Format code according to style guide
+```
+
+{% endif %}
+
+## Pull Request Process
+
+{% if contributing.pr_required %}
+### Pull Request Requirements
+
+1. **Create a feature branch** from the main branch
+2. **Make your changes** following the code style guidelines
+3. **Write tests** for new functionality
+4. **Update documentation** as needed
+5. **Ensure all checks pass** (tests, linting, formatting)
+6. **Create a pull request** with a clear description
+
+### Pull Request Template
+
+When creating a pull request, please use the following template:
+
+```markdown
+## Description
+Brief description of the changes made.
+
+## Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+
+## Testing
+- [ ] I have tested my changes locally
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] All existing tests pass
+
+## Checklist
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] Any dependent changes have been merged and published in downstream modules
+
+## Related Issues
+Closes #[issue_number]
+```
+
+{% if contributing.review_required %}
+### Code Review Process
+
+{% if contributing.reviewers_count == 1 %}
+- **One approval** is required from maintainers
+{% else %}
+- **{{ contributing.reviewers_count }} approvals** are required from maintainers
+{% endif %}
+- All CI checks must pass before merging
+- Address review feedback before requesting another review
+- Maintainers may request additional changes or testing
+
+{% endif %}
+
+{% else %}
+### Direct Commits
+
+Small, safe changes may be committed directly to the main branch:
+- Documentation updates
+- Minor formatting changes
+- Dependency updates (with proper testing)
+- Configuration file updates
+
+For larger changes, please create a pull request for review.
+{% endif %}
+
+## Issue Reporting
+
+{% if contributing.issue_template_enabled %}
+### Issue Templates
+
+We use structured issue templates to ensure all necessary information is provided:
+
+- **Bug Report**: For reporting bugs and issues
+- **Feature Request**: For requesting new features
+- **Documentation**: For documentation-related issues
+- **Question**: For general questions and support
+
+Please use the appropriate template when creating an issue.
+{% else %}
+### Reporting Issues
+
+When reporting issues, please include:
+
+1. **Clear description** of the problem
+2. **Steps to reproduce** the issue
+3. **Expected behavior** vs. actual behavior
+4. **Environment details** (OS, version, etc.)
+5. **Screenshots or logs** if applicable
+6. **Minimal reproduction case** if possible
+{% endif %}
+
+### Issue Guidelines
+
+- Search existing issues before creating a new one
+- Use clear, descriptive titles
+- Provide as much context as possible
+- Be respectful and constructive
+- Update issues with new information as it becomes available
+
+{% if contributing.cla_required %}
+## Contributor License Agreement
+
+{% if contributing.cla_type == "individual" %}
+### Individual Contributor License Agreement
+
+By contributing to this project, you agree to the terms of our Individual Contributor License Agreement. This agreement ensures that your contributions can be used in the project while protecting both you and the project.
+
+**Key points:**
+- You retain copyright to your contributions
+- You grant the project a license to use your contributions
+- You represent that you have the right to grant this license
+- You are not required to assign copyright to the project
+
+{% elif contributing.cla_type == "corporate" %}
+### Corporate Contributor License Agreement
+
+If you are contributing on behalf of a corporation, you must complete our Corporate Contributor License Agreement. This agreement ensures that your employer has authorized your contributions.
+
+**Requirements:**
+- Corporate legal representative must sign the agreement
+- Agreement must be completed before contributions are accepted
+- All contributors from the corporation must be listed
+- Agreement covers all future contributions from the corporation
+
+{% elif contributing.cla_type == "both" %}
+### Contributor License Agreement
+
+We require both Individual and Corporate Contributor License Agreements to ensure proper licensing of all contributions.
+
+**Individual contributors:**
+- Must complete the Individual CLA
+- Covers personal contributions
+
+**Corporate contributors:**
+- Must complete the Corporate CLA
+- Covers contributions made on behalf of the corporation
+
+**Process:**
+1. Complete the appropriate CLA(s)
+2. Wait for approval from maintainers
+3. Begin contributing to the project
+{% endif %}
+
+**CLA forms and instructions are available at:** [CLA Link TBD]
+{% endif %}
+
+## Code of Conduct
+
+### Our Pledge
+
+We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
+
+### Our Standards
+
+Examples of behavior that contributes to a positive environment:
+
+- Using welcoming and inclusive language
+- Being respectful of differing opinions and viewpoints
+- Gracefully accepting constructive criticism
+- Focusing on what is best for the community
+- Showing empathy towards other community members
+
+Examples of unacceptable behavior:
+
+- The use of sexualized language or imagery and sexual attention or advances
+- Trolling, insulting/derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information without explicit permission
+- Other conduct which could reasonably be considered inappropriate
+
+### Enforcement
+
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at [contact information]. All complaints will be reviewed and investigated promptly and fairly.
+
+## Getting Help
+
+If you need help with contributing:
+
+1. **Check the documentation** first
+2. **Search existing issues** for similar questions
+3. **Ask in discussions** or community channels
+4. **Contact maintainers** for specific guidance
+
+## Recognition
+
+Contributors are recognized in several ways:
+
+- **Contributors list** in the project README
+- **Release notes** for significant contributions
+- **Special thanks** for major features or bug fixes
+- **Community spotlight** for outstanding contributions
+
+---
+
+Thank you for contributing to {{ project_name }}! Your contributions help make this project better for everyone.

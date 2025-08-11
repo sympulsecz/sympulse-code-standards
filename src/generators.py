@@ -203,6 +203,9 @@ class ProjectGenerator:
                 # Render template content
                 jinja_template = Template(content)
                 template_vars = self._get_template_vars(language, config or {})
+                # Remove language from template_vars to avoid duplication
+                if "language" in template_vars:
+                    template_vars.pop("language")
                 rendered_content = jinja_template.render(
                     language=language,
                     project_name=path.name,
@@ -274,6 +277,7 @@ class ProjectGenerator:
             # Remove contributing and code_quality from template_vars to avoid duplication
             template_vars.pop("contributing", None)
             template_vars.pop("code_quality", None)
+            template_vars.pop("language", None)
             rendered_content = jinja_template.render(
                 language=language,
                 project_name=path.name,
@@ -296,9 +300,12 @@ class ProjectGenerator:
                 template_content = f.read()
 
             jinja_template = Template(template_content)
+            # Remove language from config to avoid duplication
+            config_copy = config.copy()
+            config_copy.pop("language", None)
             rendered_content = jinja_template.render(
                 project_name=path.name,
-                **config,
+                **config_copy,
             )
 
             coc_path = path / "CODE_OF_CONDUCT.md"
@@ -325,9 +332,12 @@ class ProjectGenerator:
                 template_content = f.read()
 
             jinja_template = Template(template_content)
+            # Remove language from config to avoid duplication
+            config_copy = config.copy()
+            config_copy.pop("language", None)
             rendered_content = jinja_template.render(
                 project_name=path.name,
-                **config,
+                **config_copy,
             )
 
             bug_path = templates_dir / "bug_report.md"
@@ -347,9 +357,12 @@ class ProjectGenerator:
                 template_content = f.read()
 
             jinja_template = Template(template_content)
+            # Remove language from config to avoid duplication
+            config_copy = config.copy()
+            config_copy.pop("language", None)
             rendered_content = jinja_template.render(
                 project_name=path.name,
-                **config,
+                **config_copy,
             )
 
             feature_path = templates_dir / "feature_request.md"
@@ -368,9 +381,12 @@ class ProjectGenerator:
                 template_content = f.read()
 
             jinja_template = Template(template_content)
+            # Remove language from config to avoid duplication
+            config_copy = config.copy()
+            config_copy.pop("language", None)
             rendered_content = jinja_template.render(
                 project_name=path.name,
-                **config,
+                **config_copy,
             )
 
             pr_path = path / ".github" / "PULL_REQUEST_TEMPLATE.md"
@@ -388,8 +404,11 @@ class ProjectGenerator:
                 template_content = f.read()
 
             jinja_template = Template(template_content)
+            # Remove language from config to avoid duplication
+            config_copy = config.copy()
+            config_copy.pop("language", None)
             rendered_content = jinja_template.render(
-                **config,
+                **config_copy,
             )
 
             gitmessage_path = path / ".gitmessage"

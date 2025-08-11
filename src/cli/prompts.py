@@ -95,15 +95,7 @@ class ProjectConfigurator:
 
         language = Prompt.ask(
             "Select programming language",
-            choices=[
-                "python",
-                "typescript",
-                "go",
-                "javascript",
-                "java",
-                "rust",
-                "csharp",
-            ],
+            choices=["python", "typescript", "javascript"],
             default="python",
         )
 

@@ -24,6 +24,12 @@ class StandardMetadata:
     languages: list[str]
     last_updated: str
     maintainer: str
+    formatters: list[str] = None
+    linters: list[str] = None
+    test_frameworks: list[str] = None
+    dependency_managers: list[str] = None
+    type_checker: str = None
+    build_tools: list[str] = None
 
 
 @dataclass
@@ -94,6 +100,13 @@ class StandardsManager:
                 if metadata_file.exists():
                     with open(metadata_file) as f:
                         data = json.load(f)
+                        # Provide default values for missing fields
+                        data.setdefault("formatters", [])
+                        data.setdefault("linters", [])
+                        data.setdefault("test_frameworks", [])
+                        data.setdefault("dependency_managers", [])
+                        data.setdefault("type_checker", None)
+                        data.setdefault("build_tools", [])
                         standards.append(StandardMetadata(**data))
 
         return standards

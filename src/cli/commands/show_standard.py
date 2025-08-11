@@ -1,18 +1,16 @@
 """Show details of a specific coding standard."""
 
 import typer
-from rich.console import Console
 from rich.panel import Panel
 
-from src.core import StandardsManager
+from ...core import StandardsManager
+from .base import create_command_app, add_help_callback, handle_generic_error, console
 
-app = typer.Typer(
-    name="show-standard",
-    help="Show details of a specific coding standard",
-    add_completion=False,
+# Create the command app
+app = create_command_app(
+    name="show-standard", help_text="Show details of a specific coding standard"
 )
-
-console = Console()
+add_help_callback(app)
 
 
 @app.command()
@@ -40,8 +38,7 @@ def standard(
         _display_standard_details(standard)
 
     except Exception as e:
-        console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        handle_generic_error(e, "show-standard")
 
 
 def _display_standard_details(standard):

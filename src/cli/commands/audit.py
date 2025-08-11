@@ -3,19 +3,23 @@
 from pathlib import Path
 
 import typer
-from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from src.core import StandardsManager
-
-app = typer.Typer(
-    name="audit",
-    help="Audit project compliance with coding standards",
-    add_completion=False,
+from ...core import StandardsManager
+from .base import (
+    create_command_app,
+    add_help_callback,
+    create_progress_bar,
+    handle_path_validation,
+    handle_generic_error,
+    console,
 )
 
-console = Console()
+# Create the command app
+app = create_command_app(
+    name="audit", help_text="Audit project compliance with coding standards"
+)
+add_help_callback(app)
 
 
 @app.command()
@@ -27,15 +31,9 @@ def project(
 ):
     """Audit project compliance with coding standards."""
     try:
-        if not path.exists():
-            console.print(f"[red]Error: Path {path} does not exist[/red]")
-            raise typer.Exit(1)
+        handle_path_validation(path, "audit")
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
+        with create_progress_bar("Auditing project...") as progress:
             task = progress.add_task("Auditing project...", total=None)
 
             manager = StandardsManager()
@@ -47,8 +45,7 @@ def project(
         _display_audit_result(result, detailed)
 
     except Exception as e:
-        console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        handle_generic_error(e, "audit")
 
 
 def _display_audit_result(result, detailed: bool):

@@ -1,18 +1,16 @@
 """List available coding standards."""
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
 from ...core import StandardsManager
+from .base import create_command_app, add_help_callback, handle_generic_error, console
 
-app = typer.Typer(
-    name="list-standards",
-    help="List available coding standards",
-    add_completion=False,
+# Create the command app
+app = create_command_app(
+    name="list-standards", help_text="List available coding standards"
 )
-
-console = Console()
+add_help_callback(app)
 
 
 @app.command()
@@ -51,5 +49,4 @@ def standards():
         console.print(table)
 
     except Exception as e:
-        console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        handle_generic_error(e, "list-standards")

@@ -4,19 +4,21 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich import print as rprint
 
 from src.generators import ProjectGenerator
-
-app = typer.Typer(
-    name="init",
-    help="Initialize a new project with coding standards",
-    add_completion=False,
+from .base import (
+    create_command_app,
+    add_help_callback,
+    create_progress_bar,
+    handle_generic_error,
 )
 
-console = Console()
+# Create the command app
+app = create_command_app(
+    name="init", help_text="Initialize a new project with coding standards"
+)
+add_help_callback(app)
 
 
 @app.command()
@@ -46,11 +48,7 @@ def project(
             if not typer.confirm(f"Directory {path} already exists. Overwrite?"):
                 raise typer.Abort()
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
+        with create_progress_bar("Initializing project...") as progress:
             task = progress.add_task("Initializing project...", total=None)
 
             generator = ProjectGenerator()
@@ -72,5 +70,4 @@ def project(
                 raise typer.Exit(1)
 
     except Exception as e:
-        console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        handle_generic_error(e, "init")

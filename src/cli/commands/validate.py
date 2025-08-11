@@ -3,18 +3,22 @@
 from pathlib import Path
 
 import typer
-from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from src.core import StandardsManager
-
-app = typer.Typer(
-    name="validate",
-    help="Validate a project against coding standards",
-    add_completion=False,
+from .base import (
+    create_command_app,
+    add_help_callback,
+    create_progress_bar,
+    handle_path_validation,
+    handle_generic_error,
+    console,
 )
 
-console = Console()
+# Create the command app
+app = create_command_app(
+    name="validate", help_text="Validate a project against coding standards"
+)
+add_help_callback(app)
 
 
 @app.command()
@@ -29,15 +33,9 @@ def project(
 ):
     """Validate a project against coding standards."""
     try:
-        if not path.exists():
-            console.print(f"[red]Error: Path {path} does not exist[/red]")
-            raise typer.Exit(1)
+        handle_path_validation(path, "validate")
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
+        with create_progress_bar("Validating project...") as progress:
             task = progress.add_task("Validating project...", total=None)
 
             manager = StandardsManager()
@@ -52,8 +50,7 @@ def project(
             raise typer.Exit(1)
 
     except Exception as e:
-        console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        handle_generic_error(e, "validate")
 
 
 def _display_validation_result(result, output: str):

@@ -83,6 +83,6 @@ configuration:
     - "prettier"
     - "jest"
     - "ts-jest"
-  min_node_version: "18"
+  min_node_version: "22"
   require_pinned_versions: true
   package_manager: "npm"

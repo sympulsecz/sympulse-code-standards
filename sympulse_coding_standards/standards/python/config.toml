@@ -1,15 +1,15 @@
 # Python Standards Configuration
-version = "0.1.0"
+version = "0.2.0"
 formatter = "black"
 linter = "flake8"
 type_checker = "mypy"
 test_framework = "pytest"
 line_length = 88
-python_version = "3.8"
+python_version = "3.13"
 
 [black]
 line_length = 88
-target_version = ["py38"]
+target_version = ["py313"]
 include = '\.pyi?$'
 
 [isort]
@@ -19,7 +19,7 @@ line_length = 88
 known_first_party = ["{{ project_name }}"]
 
 [mypy]
-python_version = "3.8"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

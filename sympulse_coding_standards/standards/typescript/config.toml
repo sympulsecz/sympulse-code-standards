@@ -1,11 +1,11 @@
 # TypeScript Standards Configuration
-version = "0.1.0"
+version = "0.2.0"
 formatter = "prettier"
 linter = "eslint"
 type_checker = "typescript"
 test_framework = "jest"
 line_length = 80
-node_version = "18"
+node_version = "24"
 
 [prettier]
 semi = true
@@ -28,9 +28,9 @@ plugins = ["@typescript-eslint"]
 "no-var" = "error"
 
 [typescript]
-target = "ES2020"
+target = "ES2024"
 module = "ESNext"
-moduleResolution = "node"
+moduleResolution = "bundler"
 strict = true
 esModuleInterop = true
 skipLibCheck = true
@@ -38,6 +38,10 @@ forceConsistentCasingInFileNames = true
 declaration = true
 outDir = "dist"
 rootDir = "src"
+allowImportingTsExtensions = true
+verbatimModuleSyntax = true
+exactOptionalPropertyTypes = true
+noUncheckedIndexedAccess = true
 
 [jest]
 preset = "ts-jest"

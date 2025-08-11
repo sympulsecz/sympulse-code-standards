@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sympulse-coding-standards"
-version = "0.1.0"
+version = "0.2.0"
 description = "Portable coding standards and project scaffolding for Sympulse team"
 readme = "README.md"
 license = { text = "MIT" }
@@ -20,7 +20,7 @@ classifiers = [
   "Topic :: Software Development :: Quality Assurance",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dependencies = [
   "click>=8.0.0",
   "jinja2>=3.0.0",
@@ -58,7 +58,7 @@ packages = ["sympulse_coding_standards"]
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py313']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -81,7 +81,7 @@ line_length = 88
 known_first_party = ["sympulse_coding_standards"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

@@ -1,5 +1,5 @@
 # Sympulse Coding Standards Configuration
-version = "0.1.0"
+version = "0.2.0"
 languages = ["python", "typescript"]
 strict_mode = false
 auto_fix = true
@@ -15,7 +15,7 @@ code_review_required = true
 # Git workflow standards
 branch_naming = "feature/description or fix/description"
 commit_message_format = "type(scope): description"
-protected_branches = ["main", "develop"]
+protected_branches = ["master", "develop"]
 required_status_checks = ["lint", "test", "build"]
 
 [ci_cd]

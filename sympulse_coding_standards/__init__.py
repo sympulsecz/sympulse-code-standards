@@ -1,6 +1,6 @@
 """Sympulse Coding Standards - Portable coding standards for Sympulse team."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Petr Čala"
 __email__ = "petr.cala@sympulse.cz"
 
@@ -10,7 +10,7 @@ from .generators import ProjectGenerator
 
 __all__ = [
     "StandardsManager",
-    "ValidationResult", 
+    "ValidationResult",
     "ProjectGenerator",
     "__version__",
 ]

@@ -232,15 +232,3 @@ class MyGroup(NestedCommandGroup):
 3. **Group logically**: Related commands should be grouped together
 4. **Keep nesting reasonable**: Don't nest too deeply (3-4 levels max recommended)
 5. **Use consistent patterns**: Follow the established patterns for adding commands
-
-## Migration from Old System
-
-The old flat command structure has been replaced with the new hierarchical system:
-
-**Old**: `scs project-init`
-**New**: `scs project init`
-
-**Old**: `scs standards-list`
-**New**: `scs standards list`
-
-All existing functionality is preserved, just reorganized into a more logical structure.

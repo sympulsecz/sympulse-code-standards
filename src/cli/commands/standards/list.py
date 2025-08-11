@@ -1,6 +1,5 @@
 """List available coding standards."""
 
-import typer
 from rich.table import Table
 
 from src.core import StandardsManager

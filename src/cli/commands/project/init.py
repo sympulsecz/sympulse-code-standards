@@ -8,7 +8,6 @@ from rich import print as rprint
 
 from src.generators import ProjectGenerator
 from src.cli.commands.base import (
-    create_direct_command,
     create_progress_bar,
     handle_generic_error,
 )

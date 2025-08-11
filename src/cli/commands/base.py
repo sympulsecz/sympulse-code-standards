@@ -4,9 +4,92 @@ import typer
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from pathlib import Path
-from typing import Optional, Any, Callable
+from typing import Optional, Callable, Dict
+
+from abc import ABC, abstractmethod
 
 console = Console()
+
+
+class CommandGroup(ABC):
+    """Abstract base class for command groups."""
+
+    def __init__(self, name: str, help_text: str):
+        self.name = name
+        self.help_text = help_text
+        self.app = typer.Typer(
+            name=name,
+            help=help_text,
+            add_completion=False,
+            invoke_without_command=True,
+            no_args_is_help=True,
+        )
+        self._add_help_callback()
+
+    def _add_help_callback(self):
+        """Add help callback for when no subcommand is provided."""
+
+        @self.app.callback(invoke_without_command=True)
+        def help_callback(ctx: typer.Context):
+            """Show help when no subcommand is provided."""
+            if ctx.invoked_subcommand is None:
+                typer.echo(ctx.get_help())
+                raise typer.Exit(0)
+
+    @abstractmethod
+    def register_commands(self):
+        """Register all commands for this group. Must be implemented by subclasses."""
+        pass
+
+    def get_app(self) -> typer.Typer:
+        """Get the Typer app instance."""
+        return self.app
+
+
+class NestedCommandGroup(CommandGroup):
+    """Command group that can contain other command groups (nested subcommands)."""
+
+    def __init__(self, name: str, help_text: str):
+        super().__init__(name, help_text)
+        self.subgroups: Dict[str, CommandGroup] = {}
+
+    def add_subgroup(self, subgroup: CommandGroup):
+        """Add a subgroup to this command group."""
+        self.subgroups[subgroup.name] = subgroup
+        self.app.add_typer(subgroup.get_app(), name=subgroup.name)
+
+    def add_command(self, func: Callable, name: str, help_text: str = ""):
+        """Add a direct command to this group."""
+        self.app.command(name=name, help=help_text)(func)
+
+
+class CommandRegistry:
+    """Registry for managing command groups and their registration."""
+
+    def __init__(self):
+        self.groups: Dict[str, CommandGroup] = {}
+
+    def register_group(self, group: CommandGroup):
+        """Register a command group."""
+        self.groups[group.name] = group
+        group.register_commands()
+
+    def get_group(self, name: str) -> Optional[CommandGroup]:
+        """Get a command group by name."""
+        return self.groups.get(name)
+
+    def get_all_groups(self) -> Dict[str, CommandGroup]:
+        """Get all registered command groups."""
+        return self.groups.copy()
+
+    def add_to_group(self, group_name: str, subgroup: CommandGroup):
+        """Add a subgroup to an existing group."""
+        if group_name in self.groups:
+            group = self.groups[group_name]
+            if isinstance(group, NestedCommandGroup):
+                group.add_subgroup(subgroup)
+            else:
+                raise ValueError(f"Group {group_name} does not support subgroups")
 
 
 def create_command_app(

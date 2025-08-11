@@ -6,8 +6,7 @@ import typer
 from rich.panel import Panel
 
 from src.core import StandardsManager
-from ..base import (
-    create_command_with_main_function,
+from src.cli.commands.base import (
     create_progress_bar,
     handle_path_validation,
     handle_generic_error,

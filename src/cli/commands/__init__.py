@@ -1,13 +1,11 @@
 """CLI commands package for Sympulse Coding Standards."""
 
-from .project import audit_project, init_project, update_project, validate_project
-from .standards import list_standards, show_standards
+from .project import project_group
+from .standards import standards_group
+from .tools import tools_group
 
 __all__ = [
-    "audit_project",
-    "init_project",
-    "update_project",
-    "validate_project",
-    "list_standards",
-    "show_standards",
+    "project_group",
+    "standards_group",
+    "tools_group",
 ]

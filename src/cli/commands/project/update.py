@@ -7,7 +7,6 @@ import typer
 
 from src.core import StandardsManager
 from src.cli.commands.base import (
-    create_command_with_main_function,
     create_progress_bar,
     handle_path_validation,
     handle_generic_error,

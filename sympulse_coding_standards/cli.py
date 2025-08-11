@@ -19,10 +19,19 @@ app = typer.Typer(
     name="scs",
     help="Sympulse Coding Standards - Manage coding standards across projects",
     add_completion=False,
-    no_args_is_help=True,
+    invoke_without_command=True,
 )
 
 console = Console()
+
+
+@app.callback(invoke_without_command=True)
+def main_callback(ctx: typer.Context):
+    """Main callback that shows help when no command is provided."""
+    if ctx.invoked_subcommand is None:
+        # No subcommand was invoked, show help and exit cleanly
+        typer.echo(ctx.get_help())
+        raise typer.Exit(0)
 
 
 @app.command()

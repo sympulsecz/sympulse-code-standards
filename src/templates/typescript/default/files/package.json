@@ -19,7 +19,7 @@
   },
   "keywords": ["typescript", "sympulse", "standards"],
   "author": "{{ author_name }} <{{ author_email }}>",
-  "license": "MIT",
+  "license": "{{ license }}",
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",

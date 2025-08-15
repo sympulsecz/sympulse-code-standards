@@ -7,12 +7,12 @@ name = "{{ project_name }}"
 version = "0.1.0"
 description = "A Python project following Sympulse coding standards"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "{{ license }}" }
 authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: {{ license }} License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",

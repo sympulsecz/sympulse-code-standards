@@ -62,6 +62,15 @@ class TestProjectGenerator:
         result = generator._render_template(template_content, **template_vars)
         assert result == "Author: John Doe, Email: john.doe@example.com"
 
+    def test_render_template_with_license_info(self):
+        """Test template rendering with license information."""
+        generator = ProjectGenerator()
+        template_content = "License: {{ license }}"
+        template_vars = {"license": "Apache-2.0"}
+
+        result = generator._render_template(template_content, **template_vars)
+        assert result == "License: Apache-2.0"
+
     @patch("src.generators.yaml.safe_load")
     def test_load_template_success(self, mock_yaml_load, tmp_path):
         """Test successful template loading."""
@@ -169,6 +178,7 @@ class TestProjectGenerator:
         assert template_vars["python_version"] == "3.11"
         assert template_vars["author_name"] == "Test Author"
         assert template_vars["author_email"] == "test@example.com"
+        assert template_vars["license"] == "MIT"
 
     def test_get_template_vars_unknown_language(self, mock_config):
         """Test template variables for unknown language."""
@@ -180,6 +190,7 @@ class TestProjectGenerator:
         assert template_vars["language"] == "python"
         assert template_vars["author_name"] == "Test Author"
         assert template_vars["author_email"] == "test@example.com"
+        assert template_vars["license"] == "MIT"
 
     def test_get_template_vars_without_author_info(self):
         """Test template variables when author info is not provided."""
@@ -195,6 +206,22 @@ class TestProjectGenerator:
         # Should use defaults when author/email not provided
         assert template_vars["author_name"] == "Your Name"
         assert template_vars["author_email"] == "your.email@example.com"
+        assert template_vars["license"] == "MIT"
+
+    def test_get_template_vars_with_different_license(self):
+        """Test template variables with different license values."""
+        generator = ProjectGenerator()
+        config_with_apache = {
+            "name": "test-project",
+            "language": "python",
+            "description": "A test project",
+            "license": "Apache-2.0",
+        }
+
+        template_vars = generator._get_template_vars("python", config_with_apache)
+
+        # Should use the provided license
+        assert template_vars["license"] == "Apache-2.0"
 
     def test_get_template_vars_typescript(self, mock_config):
         """Test template variables for TypeScript."""
@@ -223,6 +250,7 @@ class TestProjectGenerator:
         assert template_vars["es_target"] == "ES2024"
         assert template_vars["author_name"] == "Test Author"
         assert template_vars["author_email"] == "test@example.com"
+        assert template_vars["license"] == "MIT"
 
     @patch("subprocess.run")
     def test_init_git_repo_success(self, mock_subprocess, tmp_path, mock_config):
@@ -406,8 +434,10 @@ dependencies = []
         assert 'name = "test-project"' in content
         assert "{{ author_name }}" not in content
         assert "{{ author_email }}" not in content
+        assert "{{ license }}" not in content
         assert 'name = "John Doe"' in content
         assert 'email = "john.doe@example.com"' in content
+        assert 'text = "MIT"' in content
 
     def test_create_typescript_project_with_author_info(self, tmp_path):
         """Test end-to-end TypeScript project creation with author information."""
@@ -479,8 +509,10 @@ dependencies = []
         assert '"name": "test-ts-project"' in content
         assert "{{ author_name }}" not in content
         assert "{{ author_email }}" not in content
+        assert "{{ license }}" not in content
         assert "Jane Smith" in content
         assert "jane.smith@example.com" in content
+        assert '"MIT"' in content
 
     @patch("subprocess.run")
     def test_install_pre_commit_hooks_not_available(self, mock_subprocess, tmp_path):

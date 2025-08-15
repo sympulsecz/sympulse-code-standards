@@ -208,6 +208,24 @@ class TestProjectGenerator:
         assert template_vars["author_email"] == "your.email@example.com"
         assert template_vars["license"] == "MIT"
 
+    def test_get_template_vars_with_empty_author_info(self):
+        """Test template variables when author/email are empty strings."""
+        generator = ProjectGenerator()
+        config_with_empty_author = {
+            "name": "test-project",
+            "language": "python",
+            "description": "A test project",
+            "author": "",
+            "email": "",
+        }
+
+        template_vars = generator._get_template_vars("python", config_with_empty_author)
+
+        # Should use defaults when author/email are empty strings
+        assert template_vars["author_name"] == "Your Name"
+        assert template_vars["author_email"] == "your.email@example.com"
+        assert template_vars["license"] == "MIT"
+
     def test_get_template_vars_with_different_license(self):
         """Test template variables with different license values."""
         generator = ProjectGenerator()

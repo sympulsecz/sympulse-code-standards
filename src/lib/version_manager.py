@@ -217,66 +217,80 @@ class VersionManager:
             self.console.print("⚠️  generators.py not found")
             return
 
-        if version_type == "python":
-            # Update Python versions in GitHub Actions matrix
-            # Find the current Python version array and update it intelligently
-            python_matrix_match = re.search(r"python-version:\s*\[([^\]]*)\]", content)
-            if python_matrix_match:
-                current_versions = python_matrix_match.group(1)
-                # Extract current versions and replace the last one with the new version
-                version_list = [
-                    v.strip().strip("\"'") for v in current_versions.split(",")
-                ]
-                if version_list:
-                    # Keep the first few versions but replace the last one
-                    if len(version_list) >= 3:
-                        # Keep 3.9, 3.10, 3.11 and replace the last one
-                        new_versions = version_list[:-1] + [f'"{version}"']
-                    else:
-                        # If we have fewer versions, just add the new one
-                        new_versions = version_list + [f'"{version}"']
+        try:
+            # Read the file content first
+            content = generators_path.read_text()
+            original_content = content
 
-                    new_matrix = f'python-version: [{", ".join(new_versions)}]'
-                    content = re.sub(
-                        r"python-version:\s*\[[^\]]*\]", new_matrix, content
-                    )
+            if version_type == "python":
+                # Update Python versions in GitHub Actions matrix
+                # Find the current Python version array and update it intelligently
+                python_matrix_match = re.search(r"python-version:\s*\[([^\]]*)\]", content)
+                if python_matrix_match:
+                    current_versions = python_matrix_match.group(1)
+                    # Extract current versions and replace the last one with the new version
+                    version_list = [
+                        v.strip().strip("\"'") for v in current_versions.split(",")
+                    ]
+                    if version_list:
+                        # Keep the first few versions but replace the last one
+                        if len(version_list) >= 3:
+                            # Keep 3.9, 3.10, 3.11 and replace the last one
+                            new_versions = version_list[:-1] + [f'"{version}"']
+                        else:
+                            # If we have fewer versions, just add the new one
+                            new_versions = version_list + [f'"{version}"']
 
-            # Update specific Python version references
-            content = re.sub(
-                r'python-version:\s*"[^"]*"', f'python-version: "{version}"', content
-            )
+                        new_matrix = f'python-version: [{", ".join(new_versions)}]'
+                        content = re.sub(
+                            r"python-version:\s*\[[^\]]*\]", new_matrix, content
+                        )
 
-        elif version_type == "node":
-            # Update Node.js versions in GitHub Actions matrix
-            # Find the current Node.js version array and update it intelligently
-            node_matrix_match = re.search(r"node-version:\s*\[([^\]]*)\]", content)
-            if node_matrix_match:
-                current_versions = node_matrix_match.group(1)
-                # Extract current versions and replace the last one with the new version
-                version_list = [
-                    v.strip().strip("\"'") for v in current_versions.split(",")
-                ]
-                if version_list:
-                    # Keep the first few versions but replace the last one
-                    if len(version_list) >= 2:
-                        # Keep 18, 20 and replace the last one
-                        new_versions = version_list[:-1] + [f'"{version}"']
-                    else:
-                        # If we have fewer versions, just add the new one
-                        new_versions = version_list + [f'"{version}"']
+                # Update specific Python version references
+                content = re.sub(
+                    r'python-version:\s*"[^"]*"', f'python-version: "{version}"', content
+                )
 
-                    new_matrix = f'node-version: [{", ".join(new_versions)}]'
-                    content = re.sub(r"node-version:\s*\[[^\]]*\]", new_matrix, content)
+            elif version_type == "node":
+                # Update Node.js versions in GitHub Actions matrix
+                # Find the current Node.js version array and update it intelligently
+                node_matrix_match = re.search(r"node-version:\s*\[([^\]]*)\]", content)
+                if node_matrix_match:
+                    current_versions = node_matrix_match.group(1)
+                    # Extract current versions and replace the last one with the new version
+                    version_list = [
+                        v.strip().strip("\"'") for v in current_versions.split(",")
+                    ]
+                    if version_list:
+                        # Keep the first few versions but replace the last one
+                        if len(version_list) >= 2:
+                            # Keep 18, 20 and replace the last one
+                            new_versions = version_list[:-1] + [f'"{version}"']
+                        else:
+                            # If we have fewer versions, just add the new one
+                            new_versions = version_list + [f'"{version}"']
 
-            # Update specific Node.js version references
-            content = re.sub(
-                r'node-version:\s*"[^"]*"', f'node-version: "{version}"', content
-            )
+                        new_matrix = f'node-version: [{", ".join(new_versions)}]'
+                        content = re.sub(r"node-version:\s*\[[^\]]*\]", new_matrix, content)
 
-        generators_path.write_text(content)
-        self.console.print(
-            f"✅ Updated generators.py for {version_type} version {version}"
-        )
+                # Update specific Node.js version references
+                content = re.sub(
+                    r'node-version:\s*"[^"]*"', f'node-version: "{version}"', content
+                )
+
+            # Only write if content has changed
+            if content != original_content:
+                generators_path.write_text(content)
+                self.console.print(
+                    f"✅ Updated generators.py for {version_type} version {version}"
+                )
+            else:
+                self.console.print(
+                    f"ℹ️  No changes needed in generators.py for {version_type} version {version}"
+                )
+
+        except Exception as e:
+            self.console.print(f"❌ Error updating generators.py: {e}")
 
     def _update_file_content(
         self, file_path: Path, patterns: List[Tuple[str, str]]

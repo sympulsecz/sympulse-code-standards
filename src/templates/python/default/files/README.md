@@ -102,11 +102,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 This project follows Sympulse coding standards. To validate compliance:
 
 ```bash
-scs validate
+scs project validate
 ```
 
 To update to the latest standards:
 
 ```bash
-scs update
+scs project update
 ```

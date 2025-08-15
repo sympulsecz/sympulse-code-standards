@@ -46,4 +46,4 @@ def list_standards():
         console.print(table)
 
     except Exception as e:
-        handle_generic_error(e, "list-standards")
+        handle_generic_error(e, "standards list")

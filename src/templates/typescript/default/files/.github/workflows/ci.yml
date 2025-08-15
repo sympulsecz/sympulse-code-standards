@@ -61,11 +61,11 @@ jobs:
     
     - name: Validate Standards Compliance
       run: |
-        scs validate --strict
+        scs project validate --strict
     
     - name: Generate Compliance Report
       run: |
-        scs audit --detailed --output json > compliance-report.json
+        scs project audit --detailed --output json > compliance-report.json
     
     - name: Upload Compliance Report
       uses: actions/upload-artifact@v3

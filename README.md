@@ -44,7 +44,7 @@ pip install sympulse-coding-standards
 ### 1. Create a new project with standards
 
 ```bash
-scs init --language python --name my-awesome-project
+scs project init --language python --name my-awesome-project
 cd my-awesome-project
 ```
 
@@ -181,7 +181,7 @@ Add new language support by creating:
 
 ### 2. Version and tag the changes
 
-### 3. Projects can update with `scs update`
+### 3. Projects can update with `scs project update`
 
 ```bash
 # Update to latest standards

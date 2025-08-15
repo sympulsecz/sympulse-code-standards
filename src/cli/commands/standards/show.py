@@ -36,7 +36,7 @@ def show_standards(
         _display_standard_details(standard)
 
     except Exception as e:
-        handle_generic_error(e, "show-standard")
+        handle_generic_error(e, "standards show")
 
 
 def _display_standard_details(standard):

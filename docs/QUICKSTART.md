@@ -31,7 +31,7 @@ pip install sympulse-coding-standards
 
 ```bash
 # Create a new Python project
-scs init --language python --name my-awesome-project
+scs project init --language python --name my-awesome-project
 cd my-awesome-project
 
 # The project is now set up with:
@@ -45,7 +45,7 @@ cd my-awesome-project
 
 ```bash
 # Create a new TypeScript project
-scs init --language typescript --name my-ts-project
+scs project init --language typescript --name my-ts-project
 cd my-ts-project
 
 # The project is now set up with:
@@ -61,23 +61,23 @@ cd my-ts-project
 
 ```bash
 # Validate current directory
-scs validate
+scs project validate
 
 # Validate specific project
-scs validate --path /path/to/project
+scs project validate --path /path/to/project
 
 # Strict validation (fails on any violations)
-scs validate --strict
+scs project validate --strict
 ```
 
 ### Get detailed compliance report
 
 ```bash
 # Basic audit
-scs audit
+scs project audit
 
 # Detailed audit with suggestions
-scs audit --detailed
+scs project audit --detailed
 ```
 
 ## 🔄 Update Standards
@@ -86,13 +86,13 @@ scs audit --detailed
 
 ```bash
 # Update current project
-scs update
+scs project update
 
 # Update specific project
-scs update --path /path/to/project
+scs project update --path /path/to/project
 
 # Update to specific version
-scs update --version 1.2.0
+scs project update --version 1.2.0
 ```
 
 ## 📋 Available Commands
@@ -102,22 +102,22 @@ scs update --version 1.2.0
 scs --help
 
 # List available standards
-scs list-standards
+scs standards list
 
 # Show details of a specific standard
-scs show-standard python
+scs standards show python
 
 # Initialize new project
-scs init --language python --name project-name
+scs project init --language python --name project-name
 
 # Validate project
-scs validate [--strict] [--output json]
+scs project validate [--strict] [--output json]
 
 # Update standards
-scs update [--force]
+scs project update [--force]
 
 # Audit compliance
-scs audit [--detailed]
+scs project audit [--detailed]
 ```
 
 ## 🛠️ Development Workflow

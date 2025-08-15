@@ -178,7 +178,7 @@ def init_project(
                 rprint(f"  cd {path}")
                 if config.get("git_enabled", True):
                     rprint(f"  git status")
-                rprint(f"  scs validate")
+                rprint(f"  scs project validate")
 
                 if config.get("contributing_enabled"):
                     rprint(

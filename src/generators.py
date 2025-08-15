@@ -718,6 +718,8 @@ plugins:
                 "poetry_enabled": config.get("code_quality", {}).get(
                     "poetry_enabled", False
                 ),
+                "author_name": config.get("author", "Your Name"),
+                "author_email": config.get("email", "your.email@example.com"),
             },
             "typescript": {
                 "formatter": config.get("code_quality", {}).get(
@@ -731,12 +733,16 @@ plugins:
                     "node_version", "20"
                 ),
                 "es_target": config.get("code_quality", {}).get("es_target", "ES2024"),
+                "author_name": config.get("author", "Your Name"),
+                "author_email": config.get("email", "your.email@example.com"),
             },
             "go": {
                 "formatter": "gofmt",
                 "linter": config.get("code_quality", {}).get("linter", "golangci-lint"),
                 "test_framework": "testing",
                 "go_version": config.get("code_quality", {}).get("go_version", "1.21"),
+                "author_name": config.get("author", "Your Name"),
+                "author_email": config.get("email", "your.email@example.com"),
             },
         }
 

@@ -50,6 +50,18 @@ class TestProjectGenerator:
         result = generator._render_template(template_content, **template_vars)
         assert result == "Hello World!"
 
+    def test_render_template_with_author_info(self):
+        """Test template rendering with author information."""
+        generator = ProjectGenerator()
+        template_content = "Author: {{ author_name }}, Email: {{ author_email }}"
+        template_vars = {
+            "author_name": "John Doe",
+            "author_email": "john.doe@example.com",
+        }
+
+        result = generator._render_template(template_content, **template_vars)
+        assert result == "Author: John Doe, Email: john.doe@example.com"
+
     @patch("src.generators.yaml.safe_load")
     def test_load_template_success(self, mock_yaml_load, tmp_path):
         """Test successful template loading."""
@@ -155,6 +167,8 @@ class TestProjectGenerator:
         assert template_vars["type_checker"] == "mypy"
         assert template_vars["line_length"] == 88
         assert template_vars["python_version"] == "3.11"
+        assert template_vars["author_name"] == "Test Author"
+        assert template_vars["author_email"] == "test@example.com"
 
     def test_get_template_vars_unknown_language(self, mock_config):
         """Test template variables for unknown language."""
@@ -164,6 +178,37 @@ class TestProjectGenerator:
         # Should return config as-is for unknown languages
         assert template_vars["name"] == "test-project"
         assert template_vars["language"] == "python"
+        assert template_vars["author_name"] == "Test Author"
+        assert template_vars["author_email"] == "test@example.com"
+
+    def test_get_template_vars_without_author_info(self):
+        """Test template variables when author info is not provided."""
+        generator = ProjectGenerator()
+        config_without_author = {
+            "name": "test-project",
+            "language": "python",
+            "description": "A test project",
+        }
+
+        template_vars = generator._get_template_vars("python", config_without_author)
+
+        # Should use defaults when author/email not provided
+        assert template_vars["author_name"] == "Your Name"
+        assert template_vars["author_email"] == "your.email@example.com"
+
+    def test_get_template_vars_typescript(self, mock_config):
+        """Test template variables for TypeScript."""
+        generator = ProjectGenerator()
+        template_vars = generator._get_template_vars("typescript", mock_config)
+
+        assert template_vars["formatter"] == "prettier"
+        assert template_vars["linter"] == "eslint"
+        assert template_vars["type_checker"] == "typescript"
+        assert template_vars["line_length"] == 80
+        assert template_vars["node_version"] == "20"
+        assert template_vars["es_target"] == "ES2024"
+        assert template_vars["author_name"] == "Test Author"
+        assert template_vars["author_email"] == "test@example.com"
 
     @patch("subprocess.run")
     def test_init_git_repo_success(self, mock_subprocess, tmp_path, mock_config):
@@ -243,6 +288,33 @@ class TestProjectGenerator:
             call for call in mock_subprocess.call_args_list if "pre-commit" in str(call)
         ]
         assert len(pre_commit_calls) >= 2  # install + pre-push
+
+    def test_generate_files_with_author_info(self, tmp_path, mock_config):
+        """Test file generation with author information in templates."""
+        generator = ProjectGenerator()
+
+        # Create a mock template with author variables
+        template = ProjectTemplate(
+            name="Test Template",
+            description="A test template",
+            languages=["python"],
+            structure={},
+            files={"test.txt": "Author: {{ author_name }}, Email: {{ author_email }}"},
+            dependencies={},
+            features={},
+        )
+
+        # Generate files
+        generator._generate_files(tmp_path, template, "python", mock_config)
+
+        # Check that the file was generated with author info
+        test_file = tmp_path / "test.txt"
+        assert test_file.exists()
+
+        with open(test_file) as f:
+            content = f.read()
+
+        assert content == "Author: Test Author, Email: test@example.com"
 
     @patch("subprocess.run")
     def test_install_pre_commit_hooks_not_available(self, mock_subprocess, tmp_path):

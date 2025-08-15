@@ -158,7 +158,8 @@ def bump_version(
 
         elif component == "python":
             # Python version
-               if len(parts) != 2:
+            parts = current_version.split(".")
+            if len(parts) != 2:
                 click.echo(f"❌ Invalid Python version format: {current_version}")
                 ctx.exit(1)
 

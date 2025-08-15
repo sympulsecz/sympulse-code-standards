@@ -85,4 +85,3 @@ python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "--cov=src/{{ project_name }} --cov-report=term-missing --cov-report=html"
-

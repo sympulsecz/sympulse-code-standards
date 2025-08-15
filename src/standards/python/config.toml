@@ -1,5 +1,5 @@
 # Python Standards Configuration
-version = "0.2.0"
+version = "0.0.1"
 formatter = "black"
 linter = "flake8"
 type_checker = "mypy"

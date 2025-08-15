@@ -24,7 +24,7 @@ The main configuration file is located at `src/versions.toml`:
 ```toml
 [versions]
 # Project version
-project = "0.2.0"
+project = "0.0.1"
 
 # Python versions
 python = "3.13"

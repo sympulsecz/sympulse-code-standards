@@ -109,7 +109,7 @@ class TestStandardsManager:
         """Test loading default config when no file exists."""
         manager = StandardsManager()
 
-        assert manager.config.version == "0.2.0"
+        assert manager.config.version == "0.0.1"
         assert "python" in manager.config.languages
         assert "typescript" in manager.config.languages
 

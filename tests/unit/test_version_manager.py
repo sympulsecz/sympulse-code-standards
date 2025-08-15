@@ -14,7 +14,7 @@ class TestVersionManager:
         """Mock versions data for testing."""
         return {
             "versions": {
-                "project": "0.2.0",
+                "project": "0.0.1",
                 "python": "3.13",
                 "python_min": "3.11",
                 "python_target": "py313",
@@ -89,13 +89,17 @@ class TestVersionManager:
         """Test updating Python version."""
         mock_path.return_value = tmp_path
 
-        with patch.object(
-            version_manager, "_update_python_configs"
-        ) as mock_update_configs, patch.object(
-            version_manager, "_update_install_script"
-        ) as mock_update_script, patch.object(
-            version_manager, "_update_generators"
-        ) as mock_update_generators:
+        with (
+            patch.object(
+                version_manager, "_update_python_configs"
+            ) as mock_update_configs,
+            patch.object(
+                version_manager, "_update_install_script"
+            ) as mock_update_script,
+            patch.object(
+                version_manager, "_update_generators"
+            ) as mock_update_generators,
+        ):
 
             version_manager.update_python_version("3.14")
 
@@ -110,11 +114,14 @@ class TestVersionManager:
         """Test updating Node.js version."""
         mock_path.return_value = tmp_path
 
-        with patch.object(
-            version_manager, "_update_typescript_configs"
-        ) as mock_update_configs, patch.object(
-            version_manager, "_update_generators"
-        ) as mock_update_generators:
+        with (
+            patch.object(
+                version_manager, "_update_typescript_configs"
+            ) as mock_update_configs,
+            patch.object(
+                version_manager, "_update_generators"
+            ) as mock_update_generators,
+        ):
 
             version_manager.update_node_version("26")
 
@@ -169,13 +176,11 @@ class TestVersionManager:
 
     def test_update_all_versions(self, version_manager):
         """Test updating multiple versions at once."""
-        with patch.object(
-            version_manager, "update_python_version"
-        ) as mock_python, patch.object(
-            version_manager, "update_node_version"
-        ) as mock_node, patch.object(
-            version_manager, "validate_versions"
-        ) as mock_validate:
+        with (
+            patch.object(version_manager, "update_python_version") as mock_python,
+            patch.object(version_manager, "update_node_version") as mock_node,
+            patch.object(version_manager, "validate_versions") as mock_validate,
+        ):
 
             mock_validate.return_value = []
 
@@ -187,11 +192,10 @@ class TestVersionManager:
 
     def test_update_all_versions_with_validation_errors(self, version_manager):
         """Test updating versions with validation errors."""
-        with patch.object(
-            version_manager, "update_python_version"
-        ) as mock_python, patch.object(
-            version_manager, "validate_versions"
-        ) as mock_validate:
+        with (
+            patch.object(version_manager, "update_python_version") as mock_python,
+            patch.object(version_manager, "validate_versions") as mock_validate,
+        ):
 
             mock_validate.return_value = ["Python version too low"]
 

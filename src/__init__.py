@@ -1,6 +1,6 @@
 """Sympulse Coding Standards - Portable coding standards for Sympulse team."""
 
-__version__ = "0.2.0"
+__version__ = "0.0.1"
 __author__ = "Petr Čala"
 __email__ = "petr.cala@sympulse.cz"
 

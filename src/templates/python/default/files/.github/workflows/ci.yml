@@ -73,7 +73,7 @@ jobs:
           scs project audit --detailed --output json > compliance-report.json
 
       - name: Upload Compliance Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: compliance-report
           path: compliance-report.json
@@ -91,7 +91,7 @@ jobs:
           bandit -r src/ -f json -o bandit-report.json || true
 
       - name: Upload Security Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: bandit-report.json
@@ -118,7 +118,7 @@ jobs:
           python -m build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/

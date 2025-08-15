@@ -110,3 +110,4 @@ To update to the latest standards:
 ```bash
 scs project update
 ```
+

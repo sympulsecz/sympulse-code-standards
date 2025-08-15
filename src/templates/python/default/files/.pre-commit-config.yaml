@@ -32,12 +32,8 @@ repos:
     rev: v1.9.0
     hooks:
       - id: mypy
-        additional_dependencies: [
-          types-requests,
-          types-PyYAML,
-          types-setuptools,
-          types-click
-        ]
+        additional_dependencies:
+          [types-requests, types-PyYAML, types-setuptools, types-click]
         args: [--ignore-missing-imports]
 
   - repo: https://github.com/pre-commit/mirrors-prettier

@@ -525,7 +525,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.14", "3.15", "3.16"]
+        python-version: ["3.11", "3.12", "3.13"]
     
     steps:
     - uses: actions/checkout@v4
@@ -573,7 +573,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.16"
+        python-version: "3.13"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

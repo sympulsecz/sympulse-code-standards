@@ -29,10 +29,15 @@ repos:
         additional_dependencies: [flake8-docstrings]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.9.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-all]
+        additional_dependencies: [
+          types-requests,
+          types-PyYAML,
+          types-setuptools,
+          types-click
+        ]
         args: [--ignore-missing-imports]
 
   - repo: https://github.com/pre-commit/mirrors-prettier

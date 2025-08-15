@@ -13,11 +13,11 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
+from src.lib.version_manager import VersionManager
 
 # Add src to path so we can import our modules
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from src.lib.version_manager import VersionManager
 
 
 def main():

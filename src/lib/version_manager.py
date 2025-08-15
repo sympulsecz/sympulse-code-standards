@@ -64,6 +64,7 @@ class VersionManager:
 
         # Update files
         self._update_python_configs(version, target_version)
+        self._update_python_classifiers(version)
         self._update_install_script(version)
         self._update_generators(version, "python")
 
@@ -223,33 +224,58 @@ class VersionManager:
             original_content = content
 
             if version_type == "python":
-                # Update Python versions in GitHub Actions matrix
-                # Find the current Python version array and update it intelligently
-                python_matrix_match = re.search(r"python-version:\s*\[([^\]]*)\]", content)
-                if python_matrix_match:
-                    current_versions = python_matrix_match.group(1)
-                    # Extract current versions and replace the last one with the new version
-                    version_list = [
-                        v.strip().strip("\"'") for v in current_versions.split(",")
-                    ]
-                    if version_list:
-                        # Keep the first few versions but replace the last one
-                        if len(version_list) >= 3:
-                            # Keep 3.9, 3.10, 3.11 and replace the last one
-                            new_versions = version_list[:-1] + [f'"{version}"']
+                # Calculate the three Python versions to support (same logic as classifiers)
+                try:
+                    major, minor = map(int, version.split("."))
+                    versions_to_support = []
+                    
+                    # Add the new version
+                    versions_to_support.append(f"{major}.{minor}")
+                    
+                    # Add two previous versions
+                    if minor >= 2:
+                        versions_to_support.append(f"{major}.{minor - 1}")
+                    if minor >= 3:
+                        versions_to_support.append(f"{major}.{minor - 2}")
+                    elif minor >= 1:
+                        versions_to_support.append(f"{major}.{minor - 1}")
+                    
+                    # Ensure we have at least 3 versions, add more previous if needed
+                    while len(versions_to_support) < 3:
+                        if minor > 0:
+                            minor -= 1
+                            versions_to_support.append(f"{major}.{minor}")
                         else:
-                            # If we have fewer versions, just add the new one
-                            new_versions = version_list + [f'"{version}"']
-
+                            major -= 1
+                            minor = 9
+                            if major >= 3:
+                                versions_to_support.append(f"{major}.{minor}")
+                            else:
+                                break
+                    
+                    # Sort versions to ensure they're in ascending order
+                    versions_to_support.sort(key=lambda v: tuple(map(int, v.split("."))))
+                    
+                    self.console.print(f"📋 CI will test Python versions: {', '.join(versions_to_support)}")
+                    
+                    # Update Python versions in GitHub Actions matrix
+                    # Find the current Python version array and update it intelligently
+                    python_matrix_match = re.search(r"python-version:\s*\[([^\]]*)\]", content)
+                    if python_matrix_match:
+                        # Replace with our calculated versions
+                        new_versions = [f'"{v}"' for v in versions_to_support]
                         new_matrix = f'python-version: [{", ".join(new_versions)}]'
                         content = re.sub(
                             r"python-version:\s*\[[^\]]*\]", new_matrix, content
                         )
 
-                # Update specific Python version references
-                content = re.sub(
-                    r'python-version:\s*"[^"]*"', f'python-version: "{version}"', content
-                )
+                    # Update specific Python version references (like in lint job)
+                    content = re.sub(
+                        r'python-version:\s*"[^"]*"', f'python-version: "{version}"', content
+                    )
+                    
+                except ValueError as e:
+                    self.console.print(f"❌ Error calculating Python versions for CI: {e}")
 
             elif version_type == "node":
                 # Update Node.js versions in GitHub Actions matrix
@@ -422,3 +448,226 @@ class VersionManager:
                 self.console.print(f"  - {error}")
         else:
             self.console.print("✅ All versions updated successfully")
+
+    def _update_python_classifiers(self, version: str) -> None:
+        """Update Python classifiers in pyproject.toml and templates.
+        
+        Args:
+            version: New Python version (e.g., "3.14")
+        """
+        # Calculate the three Python versions to support
+        try:
+            major, minor = map(int, version.split("."))
+            versions_to_support = []
+            
+            # Add the new version
+            versions_to_support.append(f"{major}.{minor}")
+            
+            # Add two previous versions
+            if minor >= 2:
+                versions_to_support.append(f"{major}.{minor - 1}")
+            if minor >= 3:
+                versions_to_support.append(f"{major}.{minor - 2}")
+            elif minor >= 1:
+                versions_to_support.append(f"{major}.{minor - 1}")
+            
+            # Ensure we have at least 3 versions, add more previous if needed
+            while len(versions_to_support) < 3:
+                if minor > 0:
+                    minor -= 1
+                    versions_to_support.append(f"{major}.{minor}")
+                else:
+                    major -= 1
+                    minor = 9
+                    if major >= 3:
+                        versions_to_support.append(f"{major}.{minor}")
+                    else:
+                        break
+            
+            # Sort versions to ensure they're in ascending order
+            versions_to_support.sort(key=lambda v: tuple(map(int, v.split("."))))
+            
+            self.console.print(f"📋 Supporting Python versions: {', '.join(versions_to_support)}")
+            
+            # Update main pyproject.toml
+            self._update_pyproject_classifiers(versions_to_support)
+            
+            # Update Python template config
+            self._update_python_template_classifiers(versions_to_support)
+            
+            # Update CI configurations in templates
+            self._update_ci_configurations(versions_to_support)
+            
+        except ValueError as e:
+            self.console.print(f"❌ Error parsing Python version {version}: {e}")
+
+    def _update_pyproject_classifiers(self, versions: List[str]) -> None:
+        """Update Python classifiers in the main pyproject.toml file.
+        
+        Args:
+            versions: List of Python versions to support (e.g., ["3.11", "3.12", "3.13"])
+        """
+        pyproject_path = self.project_root / "pyproject.toml"
+        if not pyproject_path.exists():
+            self.console.print("⚠️  pyproject.toml not found")
+            return
+        
+        try:
+            content = pyproject_path.read_text()
+            original_content = content
+            
+            # Update the Programming Language :: Python :: 3.x classifiers
+            for version in versions:
+                classifier = f'  "Programming Language :: Python :: {version}",'
+                if classifier not in content:
+                    # Find the last Python classifier and add after it
+                    last_classifier_match = re.search(
+                        r'(\s+"Programming Language :: Python :: [^"]+",\s*\n)',
+                        content
+                    )
+                    if last_classifier_match:
+                        # Add the new classifier after the last one
+                        content = re.sub(
+                            r'(\s+"Programming Language :: Python :: [^"]+",\s*\n)',
+                            r'\1' + classifier + '\n',
+                            content,
+                            count=1
+                        )
+                    else:
+                        # If no existing classifiers, add after the classifiers line
+                        classifiers_match = re.search(r'(classifiers\s*=\s*\[)', content)
+                        if classifiers_match:
+                            content = re.sub(
+                                r'(classifiers\s*=\s*\[)',
+                                r'\1\n' + classifier,
+                                content
+                            )
+            
+            # Remove outdated classifiers that are not in our supported versions
+            # Find all Programming Language :: Python :: 3.x classifiers
+            classifier_pattern = r'\s+"Programming Language :: Python :: 3\.\d+",\s*\n'
+            existing_classifiers = re.findall(classifier_pattern, content)
+            
+            for classifier_match in existing_classifiers:
+                # Extract version from classifier
+                version_match = re.search(r'3\.(\d+)', classifier_match)
+                if version_match:
+                    classifier_version = f"3.{version_match.group(1)}"
+                    if classifier_version not in versions:
+                        # Remove this classifier
+                        content = content.replace(classifier_match, '')
+            
+            # Clean up any double newlines that might have been created
+            content = re.sub(r'\n\s*\n\s*\n', '\n\n', content)
+            
+            if content != original_content:
+                pyproject_path.write_text(content)
+                self.console.print("✅ Updated Python classifiers in pyproject.toml")
+            else:
+                self.console.print("ℹ️  No changes needed in pyproject.toml classifiers")
+                
+        except Exception as e:
+            self.console.print(f"❌ Error updating pyproject.toml classifiers: {e}")
+
+    def _update_python_template_classifiers(self, versions: List[str]) -> None:
+        """Update Python classifiers in the Python template config.
+        
+        Args:
+            versions: List of Python versions to support (e.g., ["3.11", "3.12", "3.13"])
+        """
+        # Update the Python template's pyproject.toml.j2 if it exists
+        template_pyproject = self.project_root / "src" / "templates" / "python" / "default" / "files" / "pyproject.toml"
+        if template_pyproject.exists():
+            try:
+                content = template_pyproject.read_text()
+                original_content = content
+                
+                # Update the Programming Language :: Python :: 3.x classifiers
+                for version in versions:
+                    classifier = f'  "Programming Language :: Python :: {version}",'
+                    if classifier not in content:
+                        # Find the last Python classifier and add after it
+                        last_classifier_match = re.search(
+                            r'(\s+"Programming Language :: Python :: [^"]+",\s*\n)',
+                            content
+                        )
+                        if last_classifier_match:
+                            # Add the new classifier after the last one
+                            content = re.sub(
+                                r'(\s+"Programming Language :: Python :: [^"]+",\s*\n)',
+                                r'\1' + classifier + '\n',
+                                content,
+                                count=1
+                            )
+                        else:
+                            # If no existing classifiers, add after the classifiers line
+                            classifiers_match = re.search(r'(classifiers\s*=\s*\[)', content)
+                            if classifiers_match:
+                                content = re.sub(
+                                    r'(classifiers\s*=\s*\[)',
+                                    r'\1\n' + classifier,
+                                    content
+                                )
+                
+                # Remove outdated classifiers that are not in our supported versions
+                classifier_pattern = r'\s+"Programming Language :: Python :: 3\.\d+",\s*\n'
+                existing_classifiers = re.findall(classifier_pattern, content)
+                
+                for classifier_match in existing_classifiers:
+                    # Extract version from classifier
+                    version_match = re.search(r'3\.(\d+)', classifier_match)
+                    if version_match:
+                        classifier_version = f"3.{version_match.group(1)}"
+                        if classifier_version not in versions:
+                            # Remove this classifier
+                            content = content.replace(classifier_match, '')
+                
+                # Clean up any double newlines that might have been created
+                content = re.sub(r'\n\s*\n\s*\n', '\n\n', content)
+                
+                if content != original_content:
+                    template_pyproject.write_text(content)
+                    self.console.print("✅ Updated Python classifiers in template pyproject.toml")
+                else:
+                    self.console.print("ℹ️  No changes needed in template pyproject.toml classifiers")
+                    
+            except Exception as e:
+                self.console.print(f"❌ Error updating template pyproject.toml classifiers: {e}")
+
+    def _update_ci_configurations(self, versions: List[str]) -> None:
+        """Update CI configurations in templates to use the correct Python versions.
+        
+        Args:
+            versions: List of Python versions to support (e.g., ["3.11", "3.12", "3.13"])
+        """
+        # Update the Python template's CI configuration
+        ci_template_path = self.project_root / "src" / "templates" / "python" / "default" / "files" / ".github" / "workflows" / "ci.yml"
+        if ci_template_path.exists():
+            try:
+                content = ci_template_path.read_text()
+                original_content = content
+                
+                # Update the Python version matrix in the CI configuration
+                python_matrix_match = re.search(r"python-version:\s*\[([^\]]*)\]", content)
+                if python_matrix_match:
+                    # Replace with our calculated versions
+                    new_versions = [f'"{v}"' for v in versions]
+                    new_matrix = f'python-version: [{", ".join(new_versions)}]'
+                    content = re.sub(
+                        r"python-version:\s*\[[^\]]*\]", new_matrix, content
+                    )
+                    
+                    # Also update the specific Python version used in other jobs
+                    latest_version = versions[-1]  # Use the latest version for other jobs
+                    content = re.sub(
+                        r'python-version:\s*"[^"]*"', f'python-version: "{latest_version}"', content
+                    )
+                
+                if content != original_content:
+                    ci_template_path.write_text(content)
+                    self.console.print("✅ Updated CI configuration in Python template")
+                else:
+                    self.console.print("ℹ️  No changes needed in CI configuration")
+                    
+            except Exception as e:
+                self.console.print(f"❌ Error updating CI configuration: {e}")

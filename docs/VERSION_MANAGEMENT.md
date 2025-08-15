@@ -24,53 +24,16 @@ The main configuration file is located at `src/versions.toml`:
 ```toml
 [versions]
 # Project version
-project = "0.0.1"
+project = "x.x.x"
 
 # Python versions
-python = "3.13"
-python_min = "3.11"
-python_target = "py313"
+python = "y.yy"
+...
 
 # Node.js versions  
-node = "24"
-node_min = "22"
-
-# Package versions (major tools)
-black = "23.0.0"
-isort = "5.12.0"
-# ... more tools
-
-# GitHub Actions versions
-actions_checkout = "v4"
-actions_setup_python = "v4"
-# ... more actions
+node = "zz"
+...
 ```
-
-## Usage
-
-### CLI Commands (Interactive)
-
-The system provides CLI commands under the `admin` group:
-
-```bash
-# Show current versions
-scs admin versions show
-
-# Update specific versions
-scs admin versions update --python 3.14 --node 26
-
-# Bump versions using semantic versioning
-scs admin versions bump python minor
-scs admin versions bump project patch
-
-# Validate version consistency
-scs admin versions validate
-
-# Dry run to see what would change
-scs admin versions update --python 3.14 --dry-run
-```
-
-### Standalone Script (Automation)
 
 For CI/CD pipelines and automation, use the standalone script:
 

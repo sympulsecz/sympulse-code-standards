@@ -4,8 +4,6 @@ Get up and running with Sympulse Coding Standards in minutes!
 
 ## 🚀 Quick Installation
 
-### Option 1: Install from source (recommended for development)
-
 ```bash
 # Clone the repository
 git clone https://github.com/sympulse/sympulse-coding-standards.git
@@ -19,11 +17,47 @@ chmod +x install.sh
 source .venv/bin/activate
 ```
 
-### Option 2: Install with pip
+## 🔗 Making `scs` Available System-Wide
+
+After installation, make the `scs` command available from anywhere on your system:
+
+### Option 1: Add Virtual Environment to PATH
 
 ```bash
-pip install sympulse-coding-standards
+# Add the virtual environment's bin directory to your PATH
+echo 'export PATH="$HOME/path/to/sympulse-coding-standards/.venv/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
 ```
+
+### Option 2: Create Shell Alias
+
+```bash
+# Add alias to your shell configuration (replace with actual path)
+echo 'alias scs="source /path/to/sympulse-coding-standards/.venv/bin/activate && scs"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### Option 3: Create Symbolic Link
+
+```bash
+# Create a symbolic link in a directory that's already in your PATH
+ln -s /path/to/sympulse-coding-standards/.venv/bin/scs ~/.local/bin/scs
+
+# Or add ~/.local/bin to PATH if not already there
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### Option 4: Use the Installation Script
+
+The included `install.sh` script automatically sets up the environment:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+**Note**: Replace `/path/to/sympulse-coding-standards` with the actual path where you cloned the repository.
 
 ## 🎯 Your First Project
 

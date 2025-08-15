@@ -748,6 +748,13 @@ plugins:
 
         base_vars = vars.get(language, {})
         base_vars.update(config)
+
+        # Ensure author variables are always available, even for unknown languages
+        if "author_name" not in base_vars:
+            base_vars["author_name"] = config.get("author", "Your Name")
+        if "author_email" not in base_vars:
+            base_vars["author_email"] = config.get("email", "your.email@example.com")
+
         return base_vars
 
     def _init_git_repo(self, path: Path, config: dict[str, Any]):

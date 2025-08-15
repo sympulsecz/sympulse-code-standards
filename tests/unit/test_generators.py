@@ -199,7 +199,21 @@ class TestProjectGenerator:
     def test_get_template_vars_typescript(self, mock_config):
         """Test template variables for TypeScript."""
         generator = ProjectGenerator()
-        template_vars = generator._get_template_vars("typescript", mock_config)
+
+        # Create a TypeScript-specific config to avoid conflicts with Python defaults
+        ts_config = {
+            "name": "test-project",
+            "language": "typescript",
+            "description": "A test project",
+            "author": "Test Author",
+            "email": "test@example.com",
+            "code_quality": {
+                "formatter": "prettier",
+                "linter": "eslint",
+            },
+        }
+
+        template_vars = generator._get_template_vars("typescript", ts_config)
 
         assert template_vars["formatter"] == "prettier"
         assert template_vars["linter"] == "eslint"
@@ -315,6 +329,158 @@ class TestProjectGenerator:
             content = f.read()
 
         assert content == "Author: Test Author, Email: test@example.com"
+
+    def test_create_python_project_with_author_info(self, tmp_path):
+        """Test end-to-end Python project creation with author information."""
+        generator = ProjectGenerator()
+
+        # Create a simple Python template structure
+        template_dir = tmp_path / "templates" / "python" / "default"
+        template_dir.mkdir(parents=True)
+
+        # Create template.yaml
+        template_config = {
+            "name": "Python Project Template",
+            "description": "Standard Python project with Sympulse coding standards",
+            "languages": ["python"],
+            "structure": {
+                "directories": ["src", "tests"],
+                "empty_files": ["src/__init__.py", "tests/__init__.py"],
+            },
+            "dependencies": {"python": ["pytest"]},
+            "features": {"contributing_enabled": True},
+        }
+
+        with open(template_dir / "template.yaml", "w") as f:
+            import yaml
+
+            yaml.dump(template_config, f)
+
+        # Create pyproject.toml template
+        files_dir = template_dir / "files"
+        files_dir.mkdir()
+
+        pyproject_content = """[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "A Python project following Sympulse coding standards"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
+requires-python = ">=3.11"
+dependencies = []
+"""
+
+        with open(files_dir / "pyproject.toml", "w") as f:
+            f.write(pyproject_content)
+
+        # Create project with author info
+        project_path = tmp_path / "test-project"
+        config = {
+            "name": "test-project",
+            "language": "python",
+            "description": "A test project",
+            "author": "John Doe",
+            "email": "john.doe@example.com",
+        }
+
+        success = generator.create_project(
+            path=project_path, language="python", template="default", config=config
+        )
+
+        assert success
+        assert project_path.exists()
+
+        # Check that pyproject.toml was generated with author info
+        pyproject_file = project_path / "pyproject.toml"
+        assert pyproject_file.exists()
+
+        with open(pyproject_file) as f:
+            content = f.read()
+
+        assert 'name = "{{ project_name }}"' not in content
+        assert 'name = "test-project"' in content
+        assert "{{ author_name }}" not in content
+        assert "{{ author_email }}" not in content
+        assert 'name = "John Doe"' in content
+        assert 'email = "john.doe@example.com"' in content
+
+    def test_create_typescript_project_with_author_info(self, tmp_path):
+        """Test end-to-end TypeScript project creation with author information."""
+        generator = ProjectGenerator(templates_path=tmp_path / "templates")
+
+        # Create a simple TypeScript template structure
+        template_dir = tmp_path / "templates" / "typescript" / "default"
+        template_dir.mkdir(parents=True)
+
+        # Create template.yaml
+        template_config = {
+            "name": "TypeScript Project Template",
+            "description": "Standard TypeScript project with Sympulse coding standards",
+            "languages": ["typescript"],
+            "structure": {
+                "directories": ["src", "tests"],
+                "empty_files": ["src/index.ts", "tests/index.test.ts"],
+            },
+            "dependencies": {"typescript": ["jest"]},
+            "features": {"contributing_enabled": True},
+        }
+
+        with open(template_dir / "template.yaml", "w") as f:
+            import yaml
+
+            yaml.dump(template_config, f)
+
+        # Create package.json template
+        files_dir = template_dir / "files"
+        files_dir.mkdir()
+
+        package_json_content = """{
+  "name": "{{ project_name }}",
+  "version": "0.1.0",
+  "description": "A TypeScript project following Sympulse coding standards",
+  "author": "{{ author_name }} <{{ author_email }}>",
+  "license": "MIT"
+}
+"""
+
+        with open(files_dir / "package.json", "w") as f:
+            f.write(package_json_content)
+
+        # Create project with author info
+        project_path = tmp_path / "test-ts-project"
+        config = {
+            "name": "test-ts-project",
+            "language": "typescript",
+            "description": "A test TypeScript project",
+            "author": "Jane Smith",
+            "email": "jane.smith@example.com",
+        }
+
+        success = generator.create_project(
+            path=project_path, language="typescript", template="default", config=config
+        )
+
+        assert success
+        assert project_path.exists()
+
+        # Check that package.json was generated with author info
+        package_file = project_path / "package.json"
+        assert package_file.exists()
+
+        with open(package_file) as f:
+            content = f.read()
+
+        assert '"name": "{{ project_name }}"' not in content
+        assert '"name": "test-ts-project"' in content
+        assert "{{ author_name }}" not in content
+        assert "{{ author_email }}" not in content
+        assert "Jane Smith" in content
+        assert "jane.smith@example.com" in content
 
     @patch("subprocess.run")
     def test_install_pre_commit_hooks_not_available(self, mock_subprocess, tmp_path):

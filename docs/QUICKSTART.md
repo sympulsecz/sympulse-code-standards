@@ -12,10 +12,24 @@ cd sympulse-coding-standards
 # Run the installation script
 chmod +x install.sh
 ./install.sh
+```
+
+### Alternative: Manual Installation
+
+If you prefer to set up manually, you can create a virtual environment and install dependencies:
+
+```bash
+# Create a virtual environment
+python -m venv .venv
 
 # Activate the virtual environment
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in development mode
+pip install -e .
 ```
+
+**Note**: The manual approach gives you more control over the installation process.
 
 ## 🔗 Making `scs` Available System-Wide
 
@@ -48,16 +62,7 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-### Option 4: Use the Installation Script
-
-The included `install.sh` script automatically sets up the environment:
-
-```bash
-chmod +x install.sh
-./install.sh
-```
-
-**Note**: Replace `/path/to/sympulse-coding-standards` with the actual path where you cloned the repository.
+**Note**: Replace `/path/to/sympulse-coding-standards` with the actual path where you cloned the repository. The `install.sh` script automatically creates a `.venv` directory.
 
 ## 🎯 Your First Project
 

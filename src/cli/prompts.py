@@ -111,8 +111,8 @@ class ProjectConfigurator:
             default=f"A {project_name} project with coding standards",
         )
 
-        author = Prompt.ask("Author name", default="")
-        email = Prompt.ask("Author email", default="")
+        author = Prompt.ask("Author name", default="Your Name")
+        email = Prompt.ask("Author email", default="your.email@example.com")
 
         license_choice = Prompt.ask(
             "License",

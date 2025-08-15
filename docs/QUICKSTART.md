@@ -4,6 +4,39 @@ Get up and running with Sympulse Coding Standards in minutes!
 
 ## 🚀 Quick Installation
 
+### Prerequisites
+
+- **Python 3.11+** - The installation script will check your Python version
+- **Poetry** - For dependency management and virtual environment handling
+- **Git** - For cloning the repository
+- **Shell access** - For running the installation script
+
+#### Installing Poetry
+
+If you don't have Poetry installed, you can install it using one of these methods:
+
+**Official installer (recommended):**
+
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+**Using pip:**
+
+```bash
+pip install poetry
+```
+
+**Using Homebrew (macOS):**
+
+```bash
+brew install poetry
+```
+
+After installation, you may need to add Poetry to your PATH. See the [official Poetry installation guide](https://python-poetry.org/docs/#installation) for more details.
+
+### Installation Steps
+
 ```bash
 # Clone the repository
 git clone https://github.com/sympulse/sympulse-coding-standards.git
@@ -14,9 +47,15 @@ chmod +x install.sh
 ./install.sh
 ```
 
+**Note**: The `install.sh` script automatically:
+
+- Creates a virtual environment (`.venv`)
+- Installs the package and all dependencies using Poetry
+- Sets up pre-commit hooks
+
 ### Alternative: Manual Installation
 
-If you prefer to set up manually, you can create a virtual environment and install dependencies:
+If you prefer to set up manually, you can use Poetry to manage dependencies:
 
 ```bash
 # Create a virtual environment
@@ -25,8 +64,11 @@ python -m venv .venv
 # Activate the virtual environment
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install in development mode
-pip install -e .
+# Install using Poetry
+poetry install
+
+# Install pre-commit hooks
+poetry run pre-commit install
 ```
 
 **Note**: The manual approach gives you more control over the installation process.
@@ -62,7 +104,7 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-**Note**: Replace `/path/to/sympulse-coding-standards` with the actual path where you cloned the repository. The `install.sh` script automatically creates a `.venv` directory.
+**Note**: Replace `/path/to/sympulse-coding-standards` with the actual path where you cloned the repository. Poetry automatically creates and manages the virtual environment.
 
 ## 🎯 Your First Project
 

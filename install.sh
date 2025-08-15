@@ -23,40 +23,35 @@ fi
 
 echo "✅ Python $python_version detected"
 
-# Create virtual environment
-echo "📦 Creating virtual environment..."
-python3 -m venv .venv
+# Check if Poetry is installed
+if ! command -v poetry &> /dev/null; then
+    echo "❌ Poetry is required but not installed. Please install Poetry first."
+    echo "   Visit: https://python-poetry.org/docs/#installation"
+    exit 1
+fi
 
-# Activate virtual environment
-echo "🔧 Activating virtual environment..."
-source .venv/bin/activate
+echo "✅ Poetry detected"
 
-# Upgrade pip
-echo "⬆️  Upgrading pip..."
-pip install --upgrade pip
-
-# Install the package in development mode
-echo "📥 Installing package in development mode..."
-pip install -e ".[dev]"
+echo "📥 Installing the package..."
+poetry install
 
 # Install pre-commit hooks
 echo "🔗 Installing pre-commit hooks..."
-pre-commit install
+poetry run pre-commit install
 
 echo ""
 echo "🎉 Installation complete!"
 echo ""
 echo "To use the coding standards CLI:"
-echo "  source .venv/bin/activate"
-echo "  scs --help"
+echo "  poetry run scs --help"
 echo ""
 echo "To run tests:"
-echo "  pytest"
+echo "  poetry run pytest"
 echo ""
 echo "To format code:"
-echo "  black ."
-echo "  isort ."
+echo "  poetry run black ."
+echo "  poetry run isort ."
 echo ""
 echo "To lint code:"
-echo "  flake8 ."
-echo "  mypy ."
+echo "  poetry run flake8 ."
+echo "  poetry run mypy ."
